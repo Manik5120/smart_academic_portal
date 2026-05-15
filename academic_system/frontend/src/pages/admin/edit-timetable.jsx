@@ -371,7 +371,7 @@ export default function AdminEditTimetablePage() {
               <select
                 value={semester}
                 onChange={(e) => setSemester(e.target.value)}
-                className="px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-950 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
+                className="px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-950 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#1266f1]"
               >
                 {[1, 2, 3, 4, 5, 6, 7, 8].map((s) => (
                   <option key={s} value={s.toString()}>Semester {s}</option>
@@ -384,7 +384,7 @@ export default function AdminEditTimetablePage() {
               <select
                 value={section}
                 onChange={(e) => setSection(e.target.value)}
-                className="px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-950 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
+                className="px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-950 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#1266f1]"
               >
                 {['A', 'B'].map((s) => (
                   <option key={s} value={s}>Section {s}</option>
@@ -495,13 +495,13 @@ export default function AdminEditTimetablePage() {
                                   onClick={() => openEditSlot(day, slot)}
                                   className={`w-full h-16 rounded-lg transition-all duration-200 text-left p-2 cursor-pointer hover:shadow-md hover:scale-105 ${
                                     subject
-                                      ? 'bg-gradient-to-br from-violet-50 to-indigo-50 dark:from-violet-900/20 dark:to-indigo-900/20 border border-violet-200 dark:border-violet-800'
+                                      ? 'bg-gradient-to-br from-[#1266f1]50 to-[#0d52d1]50 dark:from-[#1266f1]900/20 dark:to-[#0d52d1]900/20 border border-[#1266f1]200 dark:border-[#1266f1]800'
                                       : 'bg-gray-50 dark:bg-gray-900 border border-dashed border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800'
                                   }`}
                                 >
                                   {subject ? (
                                     <div className="space-y-0.5">
-                                      <p className="text-xs font-medium text-violet-900 dark:text-violet-100 truncate" title={subject.name}>
+                                      <p className="text-xs font-medium text-[#1266f1] dark:text-[#5a9fff] truncate" title={subject.name}>
                                         {subject.code}
                                       </p>
                                       <p className="text-[10px] text-gray-600 dark:text-gray-400 truncate" title={fac?.full_name}>
@@ -546,7 +546,7 @@ export default function AdminEditTimetablePage() {
                                                                         className={`p-3 rounded-lg border transition-all cursor-pointer ${
                                                                           version.is_active
                                                                             ? 'border-green-300 dark:border-green-700 bg-green-50 dark:bg-green-900/20'
-                                                                            : 'border-gray-200 dark:border-gray-800 hover:border-violet-300 dark:hover:border-violet-700'
+                                                                            : 'border-gray-200 dark:border-gray-800 hover:border-[#1266f1]300 dark:hover:border-[#1266f1]700'
                                                                         }`}
                                                                       >
                                                                         <div className="flex items-center justify-between mb-1">
@@ -619,7 +619,7 @@ export default function AdminEditTimetablePage() {
                                                                 <select
                                                                   value={slotForm.subject_id}
                                                                   onChange={(e) => setSlotForm({ ...slotForm, subject_id: e.target.value })}
-                                                                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
+                                                                  className="flex h-10 w-full rounded-md border border-input bg-white dark:bg-gray-800 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1266f1] cursor-pointer"
                                                                 >
                                                                   <option value="">None (Free slot)</option>
                                                                   {subjects.map((s) => (
@@ -637,7 +637,7 @@ export default function AdminEditTimetablePage() {
                                                                   value={slotForm.faculty_id}
                                                                   onChange={(e) => setSlotForm({ ...slotForm, faculty_id: e.target.value })}
                                                                   disabled={!slotForm.subject_id}
-                                                                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 disabled:opacity-50"
+                                                                  className="flex h-10 w-full rounded-md border border-input bg-white dark:bg-gray-800 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1266f1] cursor-pointer disabled:opacity-50"
                                                                 >
                                                                   <option value="">Select faculty...</option>
                                                                   {faculty.map((f) => (

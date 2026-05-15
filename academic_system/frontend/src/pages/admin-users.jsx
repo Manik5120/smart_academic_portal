@@ -12,6 +12,7 @@ import {
   Shield,
   GraduationCap,
   Briefcase,
+  Users,
   X,
   Check,
   ChevronDown,
@@ -206,7 +207,7 @@ export default function AdminUsersPage() {
         </div>
         <Button
           onClick={openAddForm}
-          className="gap-2 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700"
+          className="gap-2 bg-[#1266f1] hover:bg-[#0d52d1]"
         >
           <UserPlus className="h-4 w-4" />
           Add User
@@ -215,54 +216,54 @@ export default function AdminUsersPage() {
 
       {/* Stats */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Card className="border-gray-200 dark:border-gray-800">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-gray-100 dark:bg-gray-800">
-                <Shield className="h-5 w-5 text-gray-600 dark:text-gray-400" />
-              </div>
+        <Card className="border-0 shadow-sm bg-white dark:bg-gray-900">
+          <CardContent className="p-5">
+            <div className="flex items-center justify-between">
               <div>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.total}</p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">Total Users</p>
+                <p className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide text-xs">Total Users</p>
+                <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1">{stats.total}</p>
+              </div>
+              <div className="h-10 w-10 rounded-lg bg-[#1266f1]/10 flex items-center justify-center">
+                <Users className="h-5 w-5 text-[#1266f1]" />
               </div>
             </div>
           </CardContent>
         </Card>
-        <Card className="border-gray-200 dark:border-gray-800">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-emerald-50 dark:bg-emerald-900/20">
+        <Card className="border-0 shadow-sm bg-white dark:bg-gray-900">
+          <CardContent className="p-5">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide text-xs">Students</p>
+                <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1">{stats.students}</p>
+              </div>
+              <div className="h-10 w-10 rounded-lg bg-emerald-500/10 flex items-center justify-center">
                 <GraduationCap className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
               </div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="border-0 shadow-sm bg-white dark:bg-gray-900">
+          <CardContent className="p-5">
+            <div className="flex items-center justify-between">
               <div>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.students}</p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">Students</p>
+                <p className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide text-xs">Faculty</p>
+                <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1">{stats.faculty}</p>
+              </div>
+              <div className="h-10 w-10 rounded-lg bg-amber-500/10 flex items-center justify-center">
+                <Briefcase className="h-5 w-5 text-amber-600 dark:text-amber-400" />
               </div>
             </div>
           </CardContent>
         </Card>
-        <Card className="border-gray-200 dark:border-gray-800">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-blue-50 dark:bg-blue-900/20">
-                <Briefcase className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-              </div>
+        <Card className="border-0 shadow-sm bg-white dark:bg-gray-900">
+          <CardContent className="p-5">
+            <div className="flex items-center justify-between">
               <div>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.faculty}</p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">Faculty</p>
+                <p className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide text-xs">Admins</p>
+                <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1">{stats.admins}</p>
               </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="border-gray-200 dark:border-gray-800">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-orange-50 dark:bg-orange-900/20">
-                <Shield className="h-5 w-5 text-orange-600 dark:text-orange-400" />
-              </div>
-              <div>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.admins}</p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">Admins</p>
+              <div className="h-10 w-10 rounded-lg bg-red-500/10 flex items-center justify-center">
+                <Shield className="h-5 w-5 text-red-600 dark:text-red-400" />
               </div>
             </div>
           </CardContent>
@@ -270,77 +271,66 @@ export default function AdminUsersPage() {
       </div>
 
       {/* Filters */}
-      <Card>
-        <CardContent className="pt-6">
-          <div className="flex flex-wrap items-center gap-3">
-            {/* Search */}
-            <div className="relative flex-1 min-w-[200px]">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
-              <Input
-                placeholder="Search by name or email..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10"
-              />
-            </div>
+      <div className="flex flex-wrap items-center gap-3">
+        {/* Search */}
+        <div className="relative flex-1 min-w-[240px]">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+          <Input
+            placeholder="Search users..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-10 h-10"
+          />
+        </div>
 
-            {/* Role Filter */}
-            <div className="min-w-[140px]">
-              <select
-                value={roleFilter}
-                onChange={(e) => setRoleFilter(e.target.value)}
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-              >
-                <option value="">All Roles</option>
-                <option value="student">Students</option>
-                <option value="faculty">Faculty</option>
-                <option value="admin">Admins</option>
-              </select>
-            </div>
+        {/* Role Filter */}
+        <select
+          value={roleFilter}
+          onChange={(e) => setRoleFilter(e.target.value)}
+          className="h-10 px-4 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#1266f1] focus:border-transparent"
+        >
+          <option value="">All Roles</option>
+          <option value="student">Students</option>
+          <option value="faculty">Faculty</option>
+          <option value="admin">Admins</option>
+        </select>
 
-            {/* Semester Filter */}
-            <div className="min-w-[120px]">
-              <select
-                value={semesterFilter}
-                onChange={(e) => setSemesterFilter(e.target.value)}
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-              >
-                <option value="">All Semesters</option>
-                {[1, 2, 3, 4, 5, 6, 7, 8].map(s => (
-                  <option key={s} value={s.toString()}>Sem {s}</option>
-                ))}
-              </select>
-            </div>
+        {/* Semester Filter */}
+        <select
+          value={semesterFilter}
+          onChange={(e) => setSemesterFilter(e.target.value)}
+          className="h-10 px-4 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#1266f1] focus:border-transparent"
+        >
+          <option value="">All Semesters</option>
+          {[1, 2, 3, 4, 5, 6, 7, 8].map(s => (
+            <option key={s} value={s.toString()}>Sem {s}</option>
+          ))}
+        </select>
 
-            {/* Section Filter */}
-            <div className="min-w-[120px]">
-              <select
-                value={sectionFilter}
-                onChange={(e) => setSectionFilter(e.target.value)}
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-              >
-                <option value="">All Sections</option>
-                {['A', 'B'].map(s => (
-                  <option key={s} value={s}>Section {s}</option>
-                ))}
-              </select>
-            </div>
+        {/* Section Filter */}
+        <select
+          value={sectionFilter}
+          onChange={(e) => setSectionFilter(e.target.value)}
+          className="h-10 px-4 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#1266f1] focus:border-transparent"
+        >
+          <option value="">All Sections</option>
+          {['A', 'B'].map(s => (
+            <option key={s} value={s}>Section {s}</option>
+          ))}
+        </select>
 
-            {/* Clear Filters */}
-            {hasActiveFilters && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={clearFilters}
-                className="gap-1"
-              >
-                <Filter className="h-4 w-4" />
-                Clear
-              </Button>
-            )}
-          </div>
-        </CardContent>
-      </Card>
+        {/* Clear Filters */}
+        {hasActiveFilters && (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={clearFilters}
+            className="h-10 gap-1"
+          >
+            Clear
+          </Button>
+        )}
+      </div>
 
       {/* Add/Edit Form Modal */}
       {showAddForm && (
@@ -364,12 +354,12 @@ export default function AdminUsersPage() {
                         onClick={() => setFormData({ ...formData, role })}
                         className={`flex flex-col items-center gap-1.5 p-3 rounded-lg border-2 transition-all ${
                           formData.role === role
-                            ? 'border-violet-500 bg-violet-50 dark:bg-violet-900/20'
+                            ? 'border-[#1266f1] bg-[#1266f1]/10 dark:bg-[#1266f1]/20'
                             : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
                         }`}
                       >
                         {React.createElement(getRoleIcon(role), {
-                          className: `h-5 w-5 ${formData.role === role ? 'text-violet-600 dark:text-violet-400' : 'text-gray-400'}`
+                          className: `h-5 w-5 ${formData.role === role ? 'text-[#1266f1] dark:text-[#5a9fff]' : 'text-gray-400'}`
                         })}
                         <span className="text-xs font-medium capitalize">{role}</span>
                       </button>
@@ -408,7 +398,7 @@ export default function AdminUsersPage() {
                       <select
                         value={formData.semester}
                         onChange={(e) => setFormData({ ...formData, semester: e.target.value })}
-                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                        className="flex h-10 w-full rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-2 text-sm cursor-pointer"
                         required
                       >
                         {[1, 2, 3, 4, 5, 6, 7, 8].map(s => (
@@ -422,7 +412,7 @@ export default function AdminUsersPage() {
                       <select
                         value={formData.section}
                         onChange={(e) => setFormData({ ...formData, section: e.target.value })}
-                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                        className="flex h-10 w-full rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-2 text-sm cursor-pointer"
                         required
                       >
                         {['A', 'B'].map(s => (
@@ -452,7 +442,7 @@ export default function AdminUsersPage() {
                   <Button
                     type="submit"
                     disabled={submitting}
-                    className="flex-1 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700"
+                    className="flex-1 bg-[#1266f1] hover:bg-[#0d52d1]"
                   >
                     {submitting ? 'Processing...' : editingUser ? 'Update User' : 'Create User'}
                   </Button>
@@ -505,88 +495,87 @@ export default function AdminUsersPage() {
       )}
 
       {/* Users List */}
-      <Card className="border-gray-200 dark:border-gray-800">
-        <CardHeader>
-          <CardTitle>All Users</CardTitle>
-          <CardDescription>{users.length} users in the system {hasActiveFilters && '(filtered)'}</CardDescription>
-        </CardHeader>
-        <CardContent>
-          {loading ? (
-            <div className="flex justify-center py-12">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-violet-600"></div>
-            </div>
-          ) : (
-            <div className="space-y-2">
-              {users.map((user) => {
-                const RoleIcon = getRoleIcon(user.role);
-                const badge = getRoleBadge(user.role);
+      <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800 overflow-hidden">
+        <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-800">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Users</h2>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">{users.length} users {hasActiveFilters && '(filtered)'}</p>
+        </div>
 
-                return (
-                  <div
-                    key={user.id}
-                    className="flex items-center justify-between p-4 rounded-lg border border-gray-200 dark:border-gray-800 hover:border-violet-300 dark:hover:border-violet-700 hover:bg-gray-50 dark:hover:bg-gray-900/50 transition-all"
-                  >
-                    <div className="flex items-center gap-4">
-                      <div className="h-12 w-12 rounded-full bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center text-white font-semibold">
-                        {user.full_name?.charAt(0) || user.email?.charAt(0)}
-                      </div>
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <p className="font-medium text-gray-900 dark:text-white">{user.full_name}</p>
-                          <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${badge.bg} ${badge.text}`}>
-                            {badge.label}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-3 text-sm text-gray-500 dark:text-gray-400 mt-0.5">
-                          <span className="flex items-center gap-1">
-                            <Mail className="h-3 w-3" />
-                            {user.email}
-                          </span>
-                          {user.role === 'student' && (
-                            <span>Sem {user.semester} • Sec {user.section}</span>
-                          )}
-                          {user.role === 'faculty' && user.department && (
-                            <span>{user.department}</span>
-                          )}
-                        </div>
-                      </div>
+        {loading ? (
+          <div className="flex justify-center py-12">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#1266f1]"></div>
+          </div>
+        ) : (
+          <div className="divide-y divide-gray-100 dark:divide-gray-800">
+            {users.map((user) => {
+              const badge = getRoleBadge(user.role);
+
+              return (
+                <div
+                  key={user.id}
+                  className="flex items-center justify-between p-4 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-all"
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="h-10 w-10 rounded-full bg-[#1266f1]/10 flex items-center justify-center text-[#1266f1] font-semibold text-sm">
+                      {user.full_name?.charAt(0) || user.email?.charAt(0)}
                     </div>
-                    <div className="flex items-center gap-2">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => openEditForm(user)}
-                        disabled={user.id === currentUser?.id}
-                        className="cursor-pointer"
-                      >
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => confirmDelete(user)}
-                        disabled={user.id === currentUser?.id}
-                        className="cursor-pointer text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <p className="font-medium text-gray-900 dark:text-white">{user.full_name}</p>
+                        <span className={`px-2 py-0.5 rounded-md text-xs font-medium ${badge.bg} ${badge.text}`}>
+                          {badge.label}
+                        </span>
+                      </div>
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">{user.email}</p>
+                      <div className="flex items-center gap-3 text-xs text-gray-400 dark:text-gray-500 mt-1">
+                        {user.role === 'student' && (
+                          <>
+                            <span>Sem {user.semester}</span>
+                            <span>•</span>
+                            <span>Sec {user.section}</span>
+                          </>
+                        )}
+                        {user.role === 'faculty' && user.department && (
+                          <span>{user.department}</span>
+                        )}
+                      </div>
                     </div>
                   </div>
-                );
-              })}
-            </div>
-          )}
+                  <div className="flex items-center gap-2">
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => openEditForm(user)}
+                      disabled={user.id === currentUser?.id}
+                      className="h-8 w-8 p-0 cursor-pointer"
+                    >
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => confirmDelete(user)}
+                      disabled={user.id === currentUser?.id}
+                      className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 cursor-pointer"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
 
-          {!loading && users.length === 0 && (
-            <div className="text-center py-12">
-              <Shield className="h-12 w-12 text-gray-300 dark:text-gray-700 mx-auto mb-4" />
-              <p className="text-gray-500 dark:text-gray-400">
-                {hasActiveFilters ? 'No users found matching your filters.' : 'No users yet. Add a user to get started.'}
-              </p>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+        {!loading && users.length === 0 && (
+          <div className="text-center py-16 px-6">
+            <Shield className="h-16 w-16 text-gray-200 dark:text-gray-800 mx-auto mb-4" />
+            <p className="text-gray-500 dark:text-gray-400">
+              {hasActiveFilters ? 'No users found matching your filters.' : 'No users yet. Add a user to get started.'}
+            </p>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

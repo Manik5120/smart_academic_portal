@@ -354,7 +354,7 @@ export default function MaterialsPage() {
                         disabled={submitting}
                         className={`rounded-full border px-3 py-1 text-sm transition-colors ${
                           uploadData.sections.includes(section)
-                            ? 'border-violet-500 bg-violet-50 text-violet-700 dark:bg-violet-900/20 dark:text-violet-300'
+                            ? 'border-[#1266f1]500 bg-[#1266f1]/50 text-[#1266f1]700 dark:bg-[#1266f1]/900/20 dark:text-[#1266f1]300'
                             : 'border-gray-200 text-muted-foreground dark:border-gray-800'
                         }`}
                       >
@@ -407,7 +407,7 @@ export default function MaterialsPage() {
 
       {loading ? (
         <div className="flex justify-center py-12">
-          <Loader2 className="h-8 w-8 animate-spin text-violet-600" />
+          <Loader2 className="h-8 w-8 animate-spin text-[#1266f1]" />
         </div>
       ) : sortedDateGroups.length > 0 ? (
         <Card className="border-gray-200 dark:border-gray-800">
@@ -422,7 +422,7 @@ export default function MaterialsPage() {
               {sortedDateGroups.map(([dateKey, dateMaterials]) => (
                 <section key={dateKey} className="space-y-2">
                   <div className="flex items-center gap-2 px-1">
-                    <CalendarDays className="h-4 w-4 text-violet-600" />
+                    <CalendarDays className="h-4 w-4 text-[#1266f1]" />
                     <h2 className="text-sm font-semibold text-gray-900 dark:text-white">
                       {formatDate(dateKey)}
                     </h2>
@@ -435,10 +435,10 @@ export default function MaterialsPage() {
                     {dateMaterials.map((material) => (
                       <div
                         key={material.id}
-                        className="flex flex-col gap-4 rounded-lg border border-gray-200 p-4 transition-all hover:border-violet-300 hover:bg-gray-50 dark:border-gray-800 dark:hover:border-violet-700 dark:hover:bg-gray-900/50 lg:flex-row lg:items-center lg:justify-between"
+                        className="flex flex-col gap-4 rounded-lg border border-gray-200 p-4 transition-all hover:border-[#1266f1]300 hover:bg-gray-50 dark:border-gray-800 dark:hover:border-[#1266f1]700 dark:hover:bg-gray-900/50 lg:flex-row lg:items-center lg:justify-between"
                       >
                         <div className="flex min-w-0 items-start gap-4">
-                          <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-lg bg-violet-50 text-violet-600 dark:bg-violet-900/20 dark:text-violet-300">
+                          <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-lg bg-[#1266f1]/50 text-[#1266f1] dark:bg-[#1266f1]/900/20 dark:text-[#1266f1]300">
                             <LinkIcon className="h-5 w-5" />
                           </div>
 
@@ -447,7 +447,7 @@ export default function MaterialsPage() {
                               <h3 className="font-medium text-gray-900 dark:text-white">
                                 {material.title}
                               </h3>
-                              <span className="inline-flex items-center gap-1 rounded-full bg-violet-50 px-2 py-0.5 text-xs font-medium text-violet-700 dark:bg-violet-900/20 dark:text-violet-300">
+                              <span className="inline-flex items-center gap-1 rounded-full bg-[#1266f1]/50 px-2 py-0.5 text-xs font-medium text-[#1266f1]700 dark:bg-[#1266f1]/900/20 dark:text-[#1266f1]300">
                                 <BookOpen className="h-3 w-3" />
                                 {material.subject?.code || 'Subject'}
                               </span>

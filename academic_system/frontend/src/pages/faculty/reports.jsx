@@ -456,7 +456,7 @@ export default function FacultyReportsPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <Loader2 className="h-8 w-8 animate-spin text-violet-600" />
+        <Loader2 className="h-8 w-8 animate-spin text-[#1266f1]" />
       </div>
     );
   }
@@ -535,7 +535,7 @@ export default function FacultyReportsPage() {
           {reportLoading ? (
             <Card>
               <CardContent className="flex items-center justify-center py-16">
-                <Loader2 className="h-7 w-7 animate-spin text-violet-600" />
+                <Loader2 className="h-7 w-7 animate-spin text-[#1266f1]" />
                 <span className="ml-3 text-sm text-muted-foreground">Loading selected subject report...</span>
               </CardContent>
             </Card>
@@ -551,7 +551,7 @@ export default function FacultyReportsPage() {
               <CardHeader className="border-b bg-gray-50/70 dark:bg-gray-900/50">
                 <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                   <div className="flex items-start gap-3">
-                    <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-300">
+                    <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-[#1266f1] text-white">
                       <BookOpen className="h-5 w-5" />
                     </div>
                     <div>

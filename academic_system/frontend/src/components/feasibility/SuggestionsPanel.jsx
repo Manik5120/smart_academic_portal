@@ -34,10 +34,10 @@ const PriorityBadge = ({ priority }) => {
 
 // Suggestion card
 const SuggestionCard = ({ suggestion }) => (
-  <div className="group p-4 bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-950/20 dark:to-purple-950/20 border border-indigo-100 dark:border-indigo-900 rounded-lg hover:shadow-lg transition-all">
+  <div className="group p-4 bg-[#1266f1]/5 border border-[#1266f1]/20 rounded-lg hover:shadow-sm transition-all">
     <div className="flex items-start gap-4">
       {/* Icon */}
-      <div className="flex-shrink-0 w-10 h-10 rounded-full bg-indigo-100 dark:bg-indigo-900/50 flex items-center justify-center text-indigo-600 dark:text-indigo-400 group-hover:scale-110 transition-transform">
+      <div className="flex-shrink-0 w-10 h-10 rounded-full bg-[#1266f1]/10 flex items-center justify-center text-[#1266f1] group-hover:scale-110 transition-transform">
         <SuggestionIcon type={suggestion.suggestion_type} />
       </div>
 
@@ -60,7 +60,7 @@ const SuggestionCard = ({ suggestion }) => (
 
         {/* Expected impact */}
         {suggestion.expected_impact && (
-          <div className="flex items-center gap-2 text-xs text-indigo-700 dark:text-indigo-400 bg-indigo-100/50 dark:bg-indigo-900/30 px-3 py-2 rounded-full max-w-fit">
+          <div className="flex items-center gap-2 text-xs text-[#1266f1] bg-[#1266f1]/10 px-3 py-2 rounded-full max-w-fit">
             <Lightbulb className="h-3 w-3" />
             <span className="font-medium">{suggestion.expected_impact}</span>
           </div>
@@ -102,11 +102,11 @@ export function SuggestionsPanel({ suggestions }) {
   const highPriorityCount = suggestions.filter(s => s.priority === 'high').length;
 
   return (
-    <Card className="border-2 border-indigo-200 dark:border-indigo-900 shadow-lg bg-gradient-to-br from-indigo-50/50 to-purple-50/50 dark:from-indigo-950/10 dark:to-purple-950/10">
-      <CardHeader className="border-b bg-indigo-100/50 dark:bg-indigo-900/20">
+    <Card className="border border-[#1266f1]/30 shadow-sm bg-[#1266f1]/5">
+      <CardHeader className="border-b bg-[#1266f1]/10">
         <CardTitle className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Lightbulb className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
+            <Lightbulb className="h-6 w-6 text-[#1266f1]" />
             <span>Recommendations</span>
           </div>
           <div className="flex items-center gap-2">

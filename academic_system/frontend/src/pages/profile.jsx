@@ -117,7 +117,7 @@ export default function ProfilePage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <Loader2 className="h-8 w-8 animate-spin text-violet-600" />
+        <Loader2 className="h-8 w-8 animate-spin text-[#1266f1] dark:text-[#5a9fff]" />
       </div>
     );
   }
@@ -201,7 +201,7 @@ export default function ProfilePage() {
                   <div className="space-y-2">
                     <Label className="text-muted-foreground text-xs uppercase tracking-wide">Section</Label>
                     <div className="flex items-center gap-2 p-3 rounded-lg bg-gray-50 dark:bg-gray-800">
-                      <span className="font-bold px-2 py-1 rounded bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-400">
+                      <span className="font-medium">
                         {profile?.section || 'N/A'}
                       </span>
                     </div>
@@ -327,7 +327,7 @@ export default function ProfilePage() {
               <Button
                 type="submit"
                 disabled={changing}
-                className="w-full bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700"
+                className="w-full bg-[#1266f1] hover:bg-[#0d52d1]"
               >
                 {changing ? (
                   <>

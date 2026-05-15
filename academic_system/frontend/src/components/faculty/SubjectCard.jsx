@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useMemo, useCallback } from 'react';
-import { ChevronDown, ChevronUp, Clock, Users, BookOpen, Check, X, Loader2 } from 'lucide-react';
+import { ChevronDown, ChevronUp, Check, X, Loader2 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { SlotGrid } from '../shared/SlotGrid';
 
@@ -14,7 +14,7 @@ export function SubjectCard({
 }) {
   const [expanded, setExpanded] = useState(false);
   const [availableSlots, setAvailableSlots] = useState([]);
-  const [savedSlots, setSavedSlots] = useState([]); // Tracks last successfully saved slots
+  const [savedSlots, setSavedSlots] = useState([]);
   const [saving, setSaving] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const loadingRef = useRef(false);
@@ -25,7 +25,6 @@ export function SubjectCard({
   const subjectCredits = subject?.credits || 3;
   const minSlots = minSlotsOverride ?? subjectCredits;
 
-  // Initialize savedSlots when initialSlots changes (on load)
   useEffect(() => {
     if (initialSlots && initialSlots.length > 0 && !loaded) {
       setSavedSlots([...initialSlots]);
@@ -47,7 +46,6 @@ export function SubjectCard({
     setAvailableSlots((prev) => {
       const exists = prev.includes(slotKey);
       if (exists) {
-        // Allow unchecking freely - validate only on save
         return prev.filter((s) => s !== slotKey);
       } else {
         setError(null);
@@ -69,7 +67,7 @@ export function SubjectCard({
       const slots = await onSave(subjectId, semester, section, null);
       if (slots) {
         setAvailableSlots(slots);
-        setSavedSlots([...slots]); // Also update savedSlots when loading from backend
+        setSavedSlots([...slots]);
       } else {
         setAvailableSlots(initialSlots);
         setSavedSlots([...initialSlots]);
@@ -104,7 +102,6 @@ export function SubjectCard({
 
       setSaving(true);
       await onSave(subjectId, semester, section, availableSlots);
-      // Update savedSlots after successful save
       setSavedSlots([...availableSlots]);
       setSuccess(true);
       setTimeout(() => setSuccess(false), 3000);
@@ -130,7 +127,7 @@ export function SubjectCard({
       className={cn(
         'border rounded-lg overflow-hidden transition-all duration-200',
         'bg-white dark:bg-gray-950',
-        expanded ? 'border-violet-200 dark:border-violet-800 shadow-sm' : 'border-gray-200 dark:border-gray-800',
+        expanded ? 'border-[#1266f1]/30 shadow-sm' : 'border-gray-200 dark:border-gray-800',
         readonly && 'opacity-75'
       )}
     >
@@ -150,31 +147,24 @@ export function SubjectCard({
         role={readonly ? undefined : 'button'}
         aria-expanded={expanded}
       >
-        <div className="flex items-center space-x-4">
-          <div className="h-12 w-12 rounded-lg bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center">
-            <BookOpen className="h-6 w-6 text-violet-600 dark:text-violet-400" />
+        <div className="flex items-center gap-4">
+          <div className="h-10 w-10 rounded-lg bg-[#1266f1]/10 flex items-center justify-center">
+            <span className="text-sm font-semibold text-[#1266f1]">{subject.code?.slice(0, 3) || 'SUB'}</span>
           </div>
           <div>
-            <div className="flex items-center space-x-2">
-              <h3 className="font-semibold text-gray-900 dark:text-white">{subject.name}</h3>
-              <span className="text-xs text-gray-500 dark:text-gray-400">({subject.code})</span>
-            </div>
-            <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400 mt-1">
-              <span className="flex items-center space-x-1">
-                <Users className="h-3 w-3" />
-                <span>Sem {semester} - Sec {section}</span>
-              </span>
-              <span className="flex items-center space-x-1">
-                <Clock className="h-3 w-3" />
-                <span>{subjectCredits} credits</span>
-              </span>
-              <span className="text-xs">
+            <h3 className="font-semibold text-gray-900 dark:text-white">{subject.name}</h3>
+            <div className="flex items-center gap-3 text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+              <span>Sem {semester} - Sec {section}</span>
+              <span>•</span>
+              <span>{subjectCredits} credit{subjectCredits > 1 ? 's' : ''}</span>
+              <span>•</span>
+              <span className={expanded ? 'text-[#1266f1]' : ''}>
                 {expanded ? availableSlots.length : savedSlots.length}/{minSlots} slots
               </span>
             </div>
           </div>
         </div>
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center gap-2">
           {success && (
             <span className="flex items-center text-green-600 dark:text-green-400 text-sm">
               <Check className="h-4 w-4" />
@@ -192,15 +182,15 @@ export function SubjectCard({
       {expanded && (
         <div className="border-t border-gray-200 dark:border-gray-800 p-4 space-y-4">
           {error && (
-            <div className="flex items-center space-x-2 p-3 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 rounded-lg text-sm">
-              <X className="h-4 w-4" />
+            <div className="flex items-center gap-2 p-3 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 rounded-lg text-sm">
+              <X className="h-4 w-4 flex-shrink-0" />
               <span>{error}</span>
             </div>
           )}
 
           {saving && !loaded ? (
             <div className="flex items-center justify-center py-8">
-              <Loader2 className="h-6 w-6 animate-spin text-violet-600" />
+              <Loader2 className="h-6 w-6 animate-spin text-[#1266f1]" />
             </div>
           ) : (
             <>
@@ -210,10 +200,9 @@ export function SubjectCard({
                 readonly={readonly}
               />
 
-              {/* Slot Legend */}
               <div className="flex items-center gap-4 text-xs text-gray-500 dark:text-gray-400 mb-3">
                 <span className="flex items-center gap-1">
-                  <span className="w-4 h-4 rounded bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 flex items-center justify-center">
+                  <span className="w-4 h-4 rounded bg-[#1266f1]/10 text-[#1266f1] flex items-center justify-center">
                     <Check className="h-3 w-3" aria-hidden="true" />
                   </span>
                   Available
@@ -227,29 +216,29 @@ export function SubjectCard({
               <div className="flex items-center justify-between">
                 <div className="text-sm text-gray-500 dark:text-gray-400">
                   <span className={cn(isValid ? 'text-green-600 dark:text-green-400' : 'text-orange-600 dark:text-orange-400')}>
-                    {availableSlots.length} available slots
+                    {availableSlots.length} selected
                   </span>
-                  <span className="mx-2">-</span>
-                  <span>Min: {minSlots} - Timetable will schedule {subjectCredits} class{subjectCredits > 1 ? 'es' : ''}/week</span>
+                  <span className="mx-2">•</span>
+                  <span>Minimum required: {minSlots}</span>
                 </div>
 
                 {!readonly && (
-                  <div className="flex items-center space-x-2">
+                  <div className="flex items-center gap-2">
                     {hasChanges && (
-                      <span className="text-xs text-orange-600 dark:text-orange-400">Unsaved changes</span>
+                      <span className="text-xs text-orange-600 dark:text-orange-400">Unsaved</span>
                     )}
                     <button
                       onClick={handleSave}
                       disabled={!hasChanges || saving || !isValid}
                       className={cn(
                         'px-4 py-2 rounded-lg text-sm font-medium transition-colors',
-                        'focus:outline-none focus:ring-2 focus:ring-violet-500 focus:ring-offset-2',
+                        'focus:outline-none focus:ring-2 focus:ring-[#1266f1] focus:ring-offset-2',
                         hasChanges && !saving && isValid
-                          ? 'bg-violet-600 text-white hover:bg-violet-700 cursor-pointer'
+                          ? 'bg-[#1266f1] text-white hover:bg-[#0d52d1] cursor-pointer'
                           : 'bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-600 cursor-not-allowed'
                       )}
                     >
-                      {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Save Changes'}
+                      {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Save'}
                     </button>
                   </div>
                 )}

@@ -152,7 +152,7 @@ const writePrintDocument = (printWindow, { title, subtitle, sectionsHtml }) => {
         <style>
           @page {
             size: landscape;
-            margin: 12mm;
+            margin: 10mm;
           }
 
           * {
@@ -161,29 +161,33 @@ const writePrintDocument = (printWindow, { title, subtitle, sectionsHtml }) => {
 
           body {
             color: #111827;
-            font-family: "Segoe UI", Arial, sans-serif;
+            font-family: "Inter", system-ui, -apple-system, sans-serif;
             margin: 0;
           }
 
           .header {
-            border-bottom: 2px solid #111827;
-            margin-bottom: 18px;
-            padding-bottom: 10px;
+            border-bottom: 2px solid #e5e7eb;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
           }
 
           h1 {
-            font-size: 24px;
+            font-size: 28px;
+            font-weight: 700;
             margin: 0 0 4px;
+            color: #111827;
           }
 
           h2 {
-            font-size: 18px;
-            margin: 0 0 12px;
+            font-size: 16px;
+            font-weight: 600;
+            margin: 0 0 16px;
+            color: #374151;
           }
 
           p {
-            color: #4b5563;
-            font-size: 13px;
+            color: #6b7280;
+            font-size: 14px;
             margin: 0;
           }
 
@@ -195,20 +199,25 @@ const writePrintDocument = (printWindow, { title, subtitle, sectionsHtml }) => {
 
           th,
           td {
-            border: 1px solid #d1d5db;
-            padding: 7px;
+            border: 1px solid #e5e7eb;
+            padding: 8px;
             text-align: center;
             vertical-align: middle;
           }
 
           th {
-            background: #f3f4f6;
+            background: #f9fafb;
             font-size: 11px;
-            font-weight: 700;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #6b7280;
           }
 
           .day-cell {
-            width: 58px;
+            width: 60px;
+            font-weight: 600;
+            color: #374151;
           }
 
           .cell {
@@ -216,46 +225,47 @@ const writePrintDocument = (printWindow, { title, subtitle, sectionsHtml }) => {
             border-radius: 8px;
             display: flex;
             flex-direction: column;
-            gap: 3px;
+            gap: 2px;
             justify-content: center;
-            min-height: 58px;
-            padding: 7px;
+            min-height: 56px;
+            padding: 8px;
           }
 
           .class-cell {
-            background: #f5f3ff;
-            border: 1px solid #c4b5fd;
-            color: #3b0764;
+            background: rgba(18, 102, 241, 0.1);
+            border: 1px solid rgba(18, 102, 241, 0.2);
+            border-radius: 8px;
           }
 
           .class-cell strong {
-            font-size: 12px;
-            line-height: 1.25;
+            font-size: 13px;
+            font-weight: 600;
+            color: #0c3d8c;
           }
 
           .class-cell span {
-            color: #6d28d9;
-            font-size: 10px;
-            line-height: 1.25;
+            color: #0a4aa8;
+            font-size: 11px;
           }
 
           .lunch {
-            background: #fffbeb;
-            border: 1px solid #fbbf24;
+            background: #fef3c7;
+            border: 1px solid #fde68a;
             color: #92400e;
-            font-size: 12px;
-            font-weight: 700;
+            font-size: 13px;
+            font-weight: 600;
           }
 
           .free {
             background: #f9fafb;
             color: #9ca3af;
-            font-size: 12px;
+            font-size: 13px;
           }
 
           .timetable-section {
             break-after: page;
             page-break-after: always;
+            margin-bottom: 32px;
           }
 
           .timetable-section:last-child {
@@ -444,7 +454,7 @@ export default function TimetablePage() {
       {/* Timetable Grid */}
       {loading ? (
         <div className="flex items-center justify-center h-64">
-          <Loader2 className="h-8 w-8 animate-spin text-violet-600" />
+          <Loader2 className="h-8 w-8 animate-spin text-[#1266f1]600" />
         </div>
       ) : timetable?.schedule ? (
         <Card>
@@ -508,12 +518,12 @@ export default function TimetablePage() {
                                   </div>
                                 </div>
                               ) : (
-                                <div className="p-3 rounded-lg text-center text-sm font-medium border bg-violet-50 dark:bg-violet-900/20 border-violet-200 dark:border-violet-800 hover:scale-105 transition-transform">
-                                  <div className="font-semibold text-violet-900 dark:text-violet-100">
+                                <div className="p-3 rounded-lg text-center text-sm font-medium border bg-[#1266f1]/50 dark:bg-[#1266f1]/900/20 border-[#1266f1]200 dark:border-[#1266f1]800 hover:scale-105 transition-transform">
+                                  <div className="font-semibold text-[#1266f1]900 dark:text-[#1266f1]100">
                                     {content.subject}
                                   </div>
                                   {content.faculty && (
-                                    <div className="text-xs text-violet-700 dark:text-violet-300 mt-1">
+                                    <div className="text-xs text-[#1266f1]700 dark:text-[#1266f1]300 mt-1">
                                       {content.faculty}
                                     </div>
                                   )}

@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Loader2, AlertCircle } from 'lucide-react';
+import { Loader2, AlertCircle, BookOpen } from 'lucide-react';
 import { ErrorBoundary } from '../../components/ErrorBoundary';
 import { SubjectCard } from '../../components/faculty/SubjectCard';
 import { facultyAssignmentService } from '../../services/facultyAssignment';
@@ -15,7 +15,6 @@ export default function FacultySubjectsPage() {
     setError(null);
     try {
       const data = await facultyAssignmentService.getMySubjects();
-      // Convert available_slots from [{day, slot}] to ["Day-Slot"] format (title case)
       const processedData = data.map(assignment => ({
         ...assignment,
         available_slots: (assignment.available_slots || []).map(slot =>
@@ -58,7 +57,7 @@ export default function FacultySubjectsPage() {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center space-y-4">
-          <Loader2 className="h-8 w-8 animate-spin text-violet-600 mx-auto" />
+          <Loader2 className="h-8 w-8 animate-spin text-[#1266f1] mx-auto" />
           <p className="text-muted-foreground">Loading your subjects...</p>
         </div>
       </div>
@@ -66,27 +65,28 @@ export default function FacultySubjectsPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-5xl">
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">My Subjects</h1>
-          <p className="text-muted-foreground mt-1">Manage your availability for assigned subjects</p>
-        </div>
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-3xl font-bold tracking-tight">My Subjects</h1>
+        <p className="text-muted-foreground">
+          Manage your availability for assigned subjects
+        </p>
       </div>
 
       {error && (
-        <div className="mb-6 flex items-center space-x-2 p-4 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 rounded-lg">
-          <AlertCircle className="h-5 w-5" />
+        <div className="flex items-center gap-2 p-4 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 rounded-lg">
+          <AlertCircle className="h-5 w-5 flex-shrink-0" />
           <span>{error}</span>
         </div>
       )}
 
       {subjects.length === 0 ? (
-        <div className="text-center py-12 bg-gray-50 dark:bg-gray-900/50 rounded-lg">
-          <p className="text-muted-foreground">No subjects assigned</p>
+        <div className="text-center py-16 bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800">
+          <BookOpen className="h-12 w-12 text-gray-300 dark:text-gray-700 mx-auto mb-4" />
+          <p className="text-muted-foreground">No subjects assigned yet</p>
         </div>
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-3">
           {subjects.map((assignment) => {
             const subjectId = assignment.subject?.id || assignment.subject?._id;
 

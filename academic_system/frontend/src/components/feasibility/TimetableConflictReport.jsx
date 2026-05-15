@@ -1012,9 +1012,9 @@ export function TimetableConflictReport({ errorMessage, conflictReport, assignme
                             {slot.faculty.map((faculty, fIdx) => (
                               <div
                                 key={fIdx}
-                                className="p-2 rounded bg-white dark:bg-gray-900 border border-purple-200 dark:border-purple-900"
+                                className="p-2 rounded bg-white dark:bg-gray-900 border border-[#1266f1]/20"
                               >
-                                <div className="flex items-center gap-2 text-xs text-purple-700 dark:text-purple-300 font-medium mb-1">
+                                <div className="flex items-center gap-2 text-xs text-[#1266f1] font-medium mb-1">
                                   <Users className="h-3 w-3" />
                                   {faculty.faculty_name}
                                 </div>

@@ -283,7 +283,7 @@ export default function AdminFacultyAvailabilityPage() {
               <select
                 value={selectedFaculty}
                 onChange={(e) => setSelectedFaculty(e.target.value)}
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
+                className="flex h-10 w-full rounded-md border border-input bg-white dark:bg-gray-800 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1266f1] cursor-pointer"
               >
                 <option value="">Select faculty...</option>
                 {allFaculty.map((f) => (
@@ -299,7 +299,7 @@ export default function AdminFacultyAvailabilityPage() {
               <select
                 value={selectedSubject}
                 onChange={(e) => setSelectedSubject(e.target.value)}
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
+                className="flex h-10 w-full rounded-md border border-input bg-white dark:bg-gray-800 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1266f1] cursor-pointer"
               >
                 <option value="">Select subject...</option>
                 {allSubjects.map((s) => (
@@ -315,7 +315,7 @@ export default function AdminFacultyAvailabilityPage() {
               <select
                 value={selectedSemester}
                 onChange={(e) => setSelectedSemester(e.target.value)}
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
+                className="flex h-10 w-full rounded-md border border-input bg-white dark:bg-gray-800 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1266f1] cursor-pointer"
               >
                 {[1, 2, 3, 4, 5, 6, 7, 8].map((s) => (
                   <option key={s} value={s.toString()}>
@@ -330,7 +330,7 @@ export default function AdminFacultyAvailabilityPage() {
               <select
                 value={selectedSection}
                 onChange={(e) => setSelectedSection(e.target.value)}
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
+                className="flex h-10 w-full rounded-md border border-input bg-white dark:bg-gray-800 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1266f1] cursor-pointer"
               >
                 {['A', 'B'].map((s) => (
                   <option key={s} value={s}>
@@ -366,7 +366,7 @@ export default function AdminFacultyAvailabilityPage() {
             <Card className="border-gray-200 dark:border-gray-800">
               <CardContent className="p-4">
                 <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-semibold">
+                  <div className="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 to-[#0d52d1] flex items-center justify-center text-white font-semibold">
                     {selectedFacultyDetails.full_name?.charAt(0) || 'U'}
                   </div>
                   <div className="flex-1 min-w-0">
@@ -384,7 +384,7 @@ export default function AdminFacultyAvailabilityPage() {
             <Card className="border-gray-200 dark:border-gray-800">
               <CardContent className="p-4">
                 <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center text-white font-semibold text-sm">
+                  <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-[#1266f1]500 to-[#0d52d1] flex items-center justify-center text-white font-semibold text-sm">
                     {selectedSubjectDetails.code?.substring(0, 3) || 'SUB'}
                   </div>
                   <div className="flex-1 min-w-0">
@@ -453,7 +453,7 @@ export default function AdminFacultyAvailabilityPage() {
 
           {/* Override Form */}
           {showOverrideForm && (
-            <Card className="border-violet-200 dark:border-violet-800">
+            <Card className="border-[#1266f1]200 dark:border-[#1266f1]800">
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <div>
@@ -482,12 +482,12 @@ export default function AdminFacultyAvailabilityPage() {
                         onClick={() => setOverrideData({ ...overrideData, override_type: 'persistent' })}
                         className={`p-3 rounded-lg border-2 transition-all text-left ${
                           overrideData.override_type === 'persistent'
-                            ? 'border-violet-500 bg-violet-50 dark:bg-violet-900/20'
+                            ? 'border-[#1266f1]500 bg-[#1266f1]/50 dark:bg-[#1266f1]/900/20'
                             : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
                         }`}
                       >
                         <div className="flex items-center gap-2">
-                          <Shield className="h-4 w-4 text-violet-600 dark:text-violet-400" />
+                          <Shield className="h-4 w-4 text-[#1266f1]600 dark:text-[#1266f1]400" />
                           <div>
                             <p className="text-sm font-medium text-gray-900 dark:text-white">Persistent</p>
                             <p className="text-xs text-gray-500 dark:text-gray-400">Stays until deleted</p>
@@ -499,12 +499,12 @@ export default function AdminFacultyAvailabilityPage() {
                         onClick={() => setOverrideData({ ...overrideData, override_type: 'one_time' })}
                         className={`p-3 rounded-lg border-2 transition-all text-left ${
                           overrideData.override_type === 'one_time'
-                            ? 'border-violet-500 bg-violet-50 dark:bg-violet-900/20'
+                            ? 'border-[#1266f1]500 bg-[#1266f1]/50 dark:bg-[#1266f1]/900/20'
                             : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
                         }`}
                       >
                         <div className="flex items-center gap-2">
-                          <Clock className="h-4 w-4 text-violet-600 dark:text-violet-400" />
+                          <Clock className="h-4 w-4 text-[#1266f1]600 dark:text-[#1266f1]400" />
                           <div>
                             <p className="text-sm font-medium text-gray-900 dark:text-white">One-Time</p>
                             <p className="text-xs text-gray-500 dark:text-gray-400">Used once, then marked applied</p>
@@ -577,7 +577,7 @@ export default function AdminFacultyAvailabilityPage() {
                                       <button
                                         type="button"
                                         onClick={() => handleSlotAction(day, slot.slot, nextAction)}
-                                        className={`h-14 w-full rounded-lg border px-2 text-xs transition-all hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-violet-500 ${cellClass}`}
+                                        className={`h-14 w-full rounded-lg border px-2 text-xs transition-all hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-[#1266f1] ${cellClass}`}
                                         title={pendingAction ? `Undo change: ${day} slot ${slot.slot}` : `${available ? 'Make unavailable' : 'Make available'}: ${day} slot ${slot.slot}`}
                                       >
                                         <span className="flex items-center justify-center gap-1 font-semibold">
@@ -615,7 +615,7 @@ export default function AdminFacultyAvailabilityPage() {
                     <Button
                       type="submit"
                       disabled={submittingOverride || overrideData.slots.length === 0}
-                      className="flex-1 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700"
+                      className="flex-1 bg-[#1266f1] hover:bg-[#0d52d1]"
                     >
                       {submittingOverride ? (
                         <>
@@ -654,7 +654,7 @@ export default function AdminFacultyAvailabilityPage() {
             <CardContent>
               {loading ? (
                 <div className="flex justify-center py-12">
-                  <Loader2 className="h-8 w-8 animate-spin text-violet-600" />
+                  <Loader2 className="h-8 w-8 animate-spin text-[#1266f1]600" />
                 </div>
               ) : (
                 <div className="overflow-x-auto">
@@ -733,14 +733,14 @@ export default function AdminFacultyAvailabilityPage() {
                   {overrides.map((override) => (
                     <div
                       key={override.id}
-                      className="p-4 rounded-lg border border-gray-200 dark:border-gray-800 hover:border-violet-300 dark:hover:border-violet-700 transition-all"
+                      className="p-4 rounded-lg border border-gray-200 dark:border-gray-800 hover:border-[#1266f1]300 dark:hover:border-[#1266f1]700 transition-all"
                     >
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-2">
                             <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
                               override.override_type === 'persistent'
-                                ? 'bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-400'
+                                ? 'bg-[#1266f1]/100 dark:bg-[#1266f1]/900/30 text-[#1266f1]700 dark:text-[#1266f1]400'
                                 : 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400'
                             }`}>
                               {override.override_type === 'persistent' ? 'Persistent' : 'One-Time'}

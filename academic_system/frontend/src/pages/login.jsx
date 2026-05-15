@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { GraduationCap, Eye, EyeOff, Mail, Lock, User, Briefcase } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock, User, Briefcase } from 'lucide-react';
 import { authService } from '../services/auth';
 import { setToken, setUser } from '../lib/api';
 import { Card, CardContent } from '../components/ui/card';
 import { Input, Label } from '../components/ui/input';
 import { Button } from '../components/ui/button';
+import nitLogo from '../../../uploads/National_Institute_of_Technology,_Srinagar_Logo.png';
+import clgBg from '../../../uploads/clg_bg.webp';
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -145,19 +147,29 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-violet-50 via-white to-indigo-50 dark:from-gray-950 dark:to-gray-900 px-4 py-8">
-      <div className="w-full max-w-md">
+    <div
+      className="min-h-screen flex flex-col bg-cover bg-center bg-no-repeat relative"
+      style={{ backgroundImage: `url(${clgBg})` }}
+    >
+      {/* Overlay for better readability */}
+      <div className="absolute inset-0 bg-white/30 dark:bg-gray-950/60 backdrop-blur-[2px]" />
+
+      {/* Content */}
+      <div className="flex-1 flex items-center justify-center px-4 py-8 relative z-10">
+        <div className="w-full max-w-md">
         {/* Logo & Title */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-violet-500 to-indigo-600 shadow-lg shadow-violet-500/25 mb-4">
-            <GraduationCap className="h-8 w-8 text-white" strokeWidth={2} />
-          </div>
+          <img
+            src={nitLogo}
+            alt="National Institute of Technology, Srinagar Logo"
+            className="h-40 w-auto mx-auto mb-4"
+          />
           <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
             Academic Portal
           </h1>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
+          {/* <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
             Department of Computer Science & Engineering
-          </p>
+          </p> */}
         </div>
 
         {/* Tab Switcher */}
@@ -167,7 +179,7 @@ export default function LoginPage() {
             onClick={() => setIsLogin(true)}
             className={`flex-1 py-2.5 px-4 rounded-lg text-sm font-medium transition-all duration-200 ${
               isLogin
-                ? 'bg-white dark:bg-gray-700 text-violet-600 dark:text-violet-400 shadow-sm'
+                ? 'bg-white dark:bg-gray-700 text-[#1266f1] dark:text-[#5a9fff] shadow-sm'
                 : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
             }`}
           >
@@ -178,7 +190,7 @@ export default function LoginPage() {
             onClick={() => setIsLogin(false)}
             className={`flex-1 py-2.5 px-4 rounded-lg text-sm font-medium transition-all duration-200 ${
               !isLogin
-                ? 'bg-white dark:bg-gray-700 text-violet-600 dark:text-violet-400 shadow-sm'
+                ? 'bg-white dark:bg-gray-700 text-[#1266f1] dark:text-[#5a9fff] shadow-sm'
                 : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
             }`}
           >
@@ -186,7 +198,7 @@ export default function LoginPage() {
           </button>
         </div>
 
-        <Card className="border-gray-200 dark:border-gray-800 shadow-xl shadow-gray-200/50 dark:shadow-none">
+        <Card className="border-white/40 dark:border-gray-700/50 bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl shadow-2xl shadow-black/10">
           <CardContent className="pt-6">
             <form onSubmit={handleSubmit} className="space-y-5" noValidate>
               {/* Submit Error */}
@@ -209,11 +221,11 @@ export default function LoginPage() {
                       onClick={() => handleChange('role', 'student')}
                       className={`flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all duration-200 ${
                         formData.role === 'student'
-                          ? 'border-violet-500 bg-violet-50 dark:bg-violet-900/20'
+                          ? 'border-[#1266f1] bg-[#1266f1]/10 dark:bg-[#1266f1]/20'
                           : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
                       }`}
                     >
-                      <Briefcase className="h-5 w-5 text-violet-600 dark:text-violet-400" />
+                      <Briefcase className="h-5 w-5 text-[#1266f1] dark:text-[#5a9fff]" />
                       <span className="text-sm font-medium text-gray-900 dark:text-white">Student</span>
                     </button>
                     <button
@@ -221,11 +233,11 @@ export default function LoginPage() {
                       onClick={() => handleChange('role', 'faculty')}
                       className={`flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all duration-200 ${
                         formData.role === 'faculty'
-                          ? 'border-violet-500 bg-violet-50 dark:bg-violet-900/20'
+                          ? 'border-[#1266f1] bg-[#1266f1]/10 dark:bg-[#1266f1]/20'
                           : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
                       }`}
                     >
-                      <User className="h-5 w-5 text-violet-600 dark:text-violet-400" />
+                      <User className="h-5 w-5 text-[#1266f1] dark:text-[#5a9fff]" />
                       <span className="text-sm font-medium text-gray-900 dark:text-white">Faculty</span>
                     </button>
                   </div>
@@ -268,7 +280,7 @@ export default function LoginPage() {
                           value={formData.semester}
                           onChange={e => handleChange('semester', e.target.value)}
                           onBlur={() => handleBlur('semester')}
-                          className={`flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer ${
+                          className={`flex h-10 w-full rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1266f1] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer ${
                             touched.semester && errors.semester ? 'border-red-500 focus-visible:ring-red-500' : ''
                           }`}
                           aria-invalid={touched.semester && errors.semester ? 'true' : 'false'}
@@ -293,7 +305,7 @@ export default function LoginPage() {
                           value={formData.section}
                           onChange={e => handleChange('section', e.target.value)}
                           onBlur={() => handleBlur('section')}
-                          className={`flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer ${
+                          className={`flex h-10 w-full rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1266f1] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer ${
                             touched.section && errors.section ? 'border-red-500 focus-visible:ring-red-500' : ''
                           }`}
                           aria-invalid={touched.section && errors.section ? 'true' : 'false'}
@@ -428,7 +440,7 @@ export default function LoginPage() {
               {/* Submit Button */}
               <Button
                 type="submit"
-                className="w-full h-11 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white font-medium shadow-lg shadow-violet-500/25 transition-all duration-200"
+                className="w-full h-11 bg-[#1266f1] hover:bg-[#0d52d1] text-white font-medium shadow-lg shadow-[#1266f1]/25 transition-all duration-200"
                 disabled={loading}
               >
                 {loading ? (
@@ -451,7 +463,7 @@ export default function LoginPage() {
                 <button
                   type="button"
                   onClick={switchMode}
-                  className="text-violet-600 dark:text-violet-400 hover:text-violet-700 dark:hover:text-violet-300 font-medium cursor-pointer transition-colors"
+                  className="text-[#1266f1] dark:text-[#5a9fff] hover:text-[#0d52d1] dark:hover:text-[#7ab3ff] font-medium cursor-pointer transition-colors"
                 >
                   {isLogin ? "Don't have an account? Sign up" : 'Already have an account? Sign in'}
                 </button>
@@ -459,12 +471,15 @@ export default function LoginPage() {
             </form>
           </CardContent>
         </Card>
+        </div>
+      </div>
 
-        {/* Footer */}
-        <p className="text-center text-xs text-gray-500 dark:text-gray-400 mt-6">
+      {/* Footer - Full Width */}
+      <footer className="relative z-10 bg-white dark:bg-gray-900 py-2 text-center shadow-lg">
+        <p className="text-sm font-semibold text-gray-900 dark:text-white">
           National Institute of Technology, Srinagar &copy; {new Date().getFullYear()} - All rights reserved.
         </p>
-      </div>
+      </footer>
     </div>
   );
 }

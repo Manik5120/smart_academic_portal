@@ -85,7 +85,7 @@ export default function FeasibilityAnalysisPage() {
               Back
             </Button>
             <div>
-              <h1 className="text-4xl font-black tracking-tight bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+              <h1 className="text-4xl font-black tracking-tight text-[#1266f1]">
                 Feasibility Analysis
               </h1>
               <p className="text-gray-600 dark:text-gray-400 mt-1">
@@ -105,7 +105,7 @@ export default function FeasibilityAnalysisPage() {
                   id="semester"
                   value={semester}
                   onChange={(e) => setSemester(Number(e.target.value))}
-                  className="px-4 py-2 border-2 border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-950 font-mono font-bold focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
+                  className="px-4 py-2 border-2 border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-950 font-mono font-bold focus:ring-2 focus:ring-[#1266f1] focus:border-[#1266f1] outline-none"
                 >
                   {[1, 2, 3, 4, 5, 6, 7, 8].map(s => (
                     <option key={s} value={s}>Semester {s}</option>
@@ -119,7 +119,7 @@ export default function FeasibilityAnalysisPage() {
                   id="section"
                   value={section}
                   onChange={(e) => setSection(e.target.value)}
-                  className="px-4 py-2 border-2 border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-950 font-mono font-bold focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
+                  className="px-4 py-2 border-2 border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-950 font-mono font-bold focus:ring-2 focus:ring-[#1266f1] focus:border-[#1266f1] outline-none"
                 >
                   {['A', 'B', 'C', 'D', 'E', 'F'].map(s => (
                     <option key={s} value={s}>Section {s}</option>
@@ -131,7 +131,7 @@ export default function FeasibilityAnalysisPage() {
                 onClick={handleAnalyze}
                 disabled={analyzing}
                 size="lg"
-                className="gap-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
+                className="gap-2 bg-[#1266f1] hover:bg-[#0d52d1]"
               >
                 {analyzing ? (
                   <>
@@ -202,8 +202,8 @@ export default function FeasibilityAnalysisPage() {
         {/* Empty state */}
         {!report && !analyzing && !error && (
           <div className="text-center py-20">
-            <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-gradient-to-br from-indigo-100 to-purple-100 dark:from-indigo-900/30 dark:to-purple-900/30 flex items-center justify-center">
-              <Sparkles className="h-12 w-12 text-indigo-600 dark:text-indigo-400" />
+            <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-[#1266f1]/10 flex items-center justify-center">
+              <Sparkles className="h-12 w-12 text-[#1266f1]" />
             </div>
             <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">
               Ready to Analyze

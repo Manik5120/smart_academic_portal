@@ -57,7 +57,7 @@ export function Navbar({ currentRole }) {
       <div className="container mx-auto flex h-16 items-center justify-between px-4 sm:px-6">
         {/* Logo */}
         <Link to="/dashboard" className="flex items-center space-x-3">
-          <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-indigo-600">
+          <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-[#1266f1]">
             <GraduationCap className="h-5 w-5 text-white" strokeWidth={2.5} />
           </div>
           <span className="font-bold text-lg text-gray-900 dark:text-white hidden sm:inline-block">
@@ -75,7 +75,7 @@ export function Navbar({ currentRole }) {
                 className={cn(
                   'flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium transition-all',
                   isActive(item.href)
-                    ? 'text-violet-600 dark:text-violet-400 bg-violet-50 dark:bg-violet-900/20'
+                    ? 'text-[#1266f1] dark:text-[#5a9fff] bg-[#1266f1]/10 dark:bg-[#1266f1]/20'
                     : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800'
                 )}
               >
@@ -89,7 +89,7 @@ export function Navbar({ currentRole }) {
         {/* User Menu */}
         <div className="flex items-center space-x-3">
           <div className="hidden sm:flex items-center space-x-2 text-sm">
-            <div className="h-8 w-8 rounded-full bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center text-white font-medium">
+            <div className="h-8 w-8 rounded-full bg-[#1266f1] flex items-center justify-center text-white font-medium">
               {user?.full_name?.charAt(0) || user?.email?.charAt(0)}
             </div>
             <div className="flex flex-col">
@@ -128,7 +128,7 @@ export function Navbar({ currentRole }) {
                   className={cn(
                     'flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium transition-all',
                     isActive(item.href)
-                      ? 'text-violet-600 dark:text-violet-400 bg-violet-50 dark:bg-violet-900/20'
+                      ? 'text-[#1266f1] dark:text-[#5a9fff] bg-[#1266f1]/10 dark:bg-[#1266f1]/20'
                       : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800'
                   )}
                 >
@@ -139,7 +139,7 @@ export function Navbar({ currentRole }) {
             )}
             <div className="border-t border-gray-200 dark:border-gray-800 pt-4 mt-4 flex items-center justify-between">
               <div className="flex items-center space-x-3">
-                <div className="h-10 w-10 rounded-full bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center text-white font-medium">
+                <div className="h-10 w-10 rounded-full bg-[#1266f1] flex items-center justify-center text-white font-medium">
                   {user?.full_name?.charAt(0) || user?.email?.charAt(0)}
                 </div>
                 <div>

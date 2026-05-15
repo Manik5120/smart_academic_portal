@@ -296,7 +296,7 @@ export default function AdminAssignmentsPage() {
           </Button>
           <Button
             onClick={openAddForm}
-            className="gap-2 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700"
+            className="gap-2 bg-[#1266f1] hover:bg-[#0d52d1]"
           >
             <UserPlus className="h-4 w-4" />
             New Assignment
@@ -325,8 +325,8 @@ export default function AdminAssignmentsPage() {
         <Card className="border-gray-200 dark:border-gray-800">
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-violet-50 dark:bg-violet-900/20">
-                <BookOpen className="h-5 w-5 text-violet-600 dark:text-violet-400" />
+              <div className="p-2 rounded-lg bg-[#1266f1]/10 dark:bg-[#1266f1]/20">
+                <BookOpen className="h-5 w-5 text-[#1266f1] dark:text-[#5a9fff]" />
               </div>
               <div>
                 <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.total}</p>
@@ -359,7 +359,7 @@ export default function AdminAssignmentsPage() {
               <select
                 value={filters.semester}
                 onChange={(e) => setFilters({ ...filters, semester: e.target.value })}
-                className="px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-950 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
+                className="px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-950 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#1266f1]"
               >
                 <option value="">All</option>
                 {SEMESTERS.map((s) => (
@@ -373,7 +373,7 @@ export default function AdminAssignmentsPage() {
               <select
                 value={filters.section}
                 onChange={(e) => setFilters({ ...filters, section: e.target.value })}
-                className="px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-950 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
+                className="px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-950 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#1266f1]"
               >
                 <option value="">All</option>
                 {SECTIONS.map((s) => (
@@ -448,7 +448,7 @@ export default function AdminAssignmentsPage() {
                     <select
                       value={subjectFormData.semester}
                       onChange={(e) => setSubjectFormData({ ...subjectFormData, semester: e.target.value })}
-                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
+                      className="flex h-10 w-full rounded-md border border-input bg-white dark:bg-gray-800 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1266f1] cursor-pointer"
                       required
                     >
                       {SEMESTERS.map((s) => (
@@ -465,7 +465,7 @@ export default function AdminAssignmentsPage() {
                         onClick={() => handleSubjectTypeChange('theory')}
                         className={`rounded-lg border-2 p-3 text-left transition-all ${
                           subjectFormData.subject_type === 'theory'
-                            ? 'border-violet-500 bg-violet-50 dark:bg-violet-900/20'
+                            ? 'border-[#1266f1] bg-[#1266f1]/10 dark:bg-[#1266f1]/20'
                             : 'border-gray-200 hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-600'
                         }`}
                       >
@@ -476,7 +476,7 @@ export default function AdminAssignmentsPage() {
                         onClick={() => handleSubjectTypeChange('lab')}
                         className={`rounded-lg border-2 p-3 text-left transition-all ${
                           subjectFormData.subject_type === 'lab'
-                            ? 'border-violet-500 bg-violet-50 dark:bg-violet-900/20'
+                            ? 'border-[#1266f1] bg-[#1266f1]/10 dark:bg-[#1266f1]/20'
                             : 'border-gray-200 hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-600'
                         }`}
                       >
@@ -518,7 +518,7 @@ export default function AdminAssignmentsPage() {
                   <Button
                     type="submit"
                     disabled={subjectSubmitting}
-                    className="flex-1 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700"
+                    className="flex-1 bg-[#1266f1] hover:bg-[#0d52d1]"
                   >
                     {subjectSubmitting ? (
                       <>
@@ -561,7 +561,7 @@ export default function AdminAssignmentsPage() {
                   <select
                     value={formData.faculty_id}
                     onChange={(e) => setFormData({ ...formData, faculty_id: e.target.value })}
-                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
+                    className="flex h-10 w-full rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1266f1] cursor-pointer"
                     required
                   >
                     <option value="">Select faculty...</option>
@@ -578,7 +578,7 @@ export default function AdminAssignmentsPage() {
                   <select
                     value={formData.subject_id}
                     onChange={(e) => setFormData({ ...formData, subject_id: e.target.value })}
-                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
+                    className="flex h-10 w-full rounded-md border border-input bg-white dark:bg-gray-800 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1266f1] cursor-pointer"
                     required
                   >
                     <option value="">Select subject...</option>
@@ -596,7 +596,7 @@ export default function AdminAssignmentsPage() {
                     <select
                       value={formData.semester}
                       onChange={(e) => setFormData({ ...formData, semester: e.target.value })}
-                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
+                      className="flex h-10 w-full rounded-md border border-input bg-white dark:bg-gray-800 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1266f1] cursor-pointer"
                       required
                     >
                       {SEMESTERS.map((s) => (
@@ -610,7 +610,7 @@ export default function AdminAssignmentsPage() {
                     <select
                       value={formData.section}
                       onChange={(e) => setFormData({ ...formData, section: e.target.value })}
-                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
+                      className="flex h-10 w-full rounded-md border border-input bg-white dark:bg-gray-800 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1266f1] cursor-pointer"
                       required
                     >
                       {ASSIGNMENT_SECTION_OPTIONS.map((option) => (
@@ -632,7 +632,7 @@ export default function AdminAssignmentsPage() {
                   <Button
                     type="submit"
                     disabled={submitting}
-                    className="flex-1 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700"
+                    className="flex-1 bg-gradient-to-r bg-[#1266f1] hover:bg-[#0d52d1]"
                   >
                     {submitting ? (
                       <>
@@ -702,7 +702,7 @@ export default function AdminAssignmentsPage() {
         <CardContent>
           {loading ? (
             <div className="flex justify-center py-12">
-              <Loader2 className="h-8 w-8 animate-spin text-violet-600" />
+              <Loader2 className="h-8 w-8 animate-spin text-[#1266f1]" />
             </div>
           ) : (
             <div className="space-y-2">
@@ -716,11 +716,11 @@ export default function AdminAssignmentsPage() {
                 return (
                   <div
                     key={assignment.id}
-                    className="flex items-center justify-between p-4 rounded-lg border border-gray-200 dark:border-gray-800 hover:border-violet-300 dark:hover:border-violet-700 hover:bg-gray-50 dark:hover:bg-gray-900/50 transition-all cursor-pointer"
+                    className="flex items-center justify-between p-4 rounded-lg border border-gray-200 dark:border-gray-800 hover:border-[#1266f1] dark:hover:border-[#1266f1] hover:bg-gray-50 dark:hover:bg-gray-900/50 transition-all cursor-pointer"
                     onClick={() => window.location.href = `/admin/faculty-availability?faculty_id=${assignment.faculty_id}&subject_id=${assignment.subject_id}&semester=${assignment.semester}&section=${assignment.section}`}
                   >
                     <div className="flex items-center gap-4">
-                      <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center text-white font-semibold">
+                      <div className="h-12 w-12 rounded-lg bg-gradient-to-br bg-[#1266f1] flex items-center justify-center text-white font-semibold">
                         {subjectCode.substring(0, 3)}
                       </div>
                       <div>

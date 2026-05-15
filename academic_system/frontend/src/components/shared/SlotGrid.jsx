@@ -164,9 +164,9 @@ export function SlotGrid({
                         disabled={readonly}
                         className={cn(
                           'w-full h-10 rounded-md transition-all duration-150 text-xs font-medium',
-                          'focus:outline-none focus:ring-2 focus:ring-violet-500 focus:ring-offset-2',
+                          'focus:outline-none focus:ring-2 focus:ring-[#1266f1] focus:ring-offset-2',
                           available
-                            ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
+                            ? 'bg-[#1266f1]/10 text-[#1266f1]'
                             : 'bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-600',
                           readonly
                             ? 'cursor-not-allowed opacity-60'

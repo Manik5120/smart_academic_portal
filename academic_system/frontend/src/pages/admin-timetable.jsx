@@ -262,7 +262,7 @@ export default function AdminTimetablePage() {
               <select
                 value={semester}
                 onChange={(e) => setSemester(parseInt(e.target.value))}
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                className="flex h-10 w-full rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-2 text-sm cursor-pointer"
               >
                 {[1, 2, 3, 4, 5, 6, 7, 8].map(s => (
                   <option key={s} value={s}>Semester {s}</option>
@@ -275,7 +275,7 @@ export default function AdminTimetablePage() {
               <select
                 value={section}
                 onChange={(e) => setSection(e.target.value)}
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                className="flex h-10 w-full rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-2 text-sm cursor-pointer"
               >
                 {['A', 'B'].map(s => (
                   <option key={s} value={s}>Section {s}</option>
@@ -296,41 +296,37 @@ export default function AdminTimetablePage() {
           <CardContent>
             {loadingAssignments ? (
               <div className="flex items-center justify-center py-8">
-                <Loader2 className="h-6 w-6 animate-spin text-violet-600" />
+                <Loader2 className="h-6 w-6 animate-spin text-[#1266f1]" />
               </div>
             ) : assignments.length === 0 ? (
-              <div className="text-center py-8 bg-gray-50 dark:bg-gray-900/50 rounded-lg">
-                <BookOpen className="h-10 w-10 text-gray-400 mx-auto mb-2" />
-                <p className="text-sm text-muted-foreground">
+              <div className="text-center py-12">
+                <BookOpen className="h-12 w-12 text-gray-300 dark:text-gray-700 mx-auto mb-3" />
+                <p className="text-sm text-gray-500 dark:text-gray-400">
                   No subject assignments found for Semester {semester}, Section {section}.
                 </p>
-                <p className="text-xs text-muted-foreground mt-1">
+                <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
                   Please assign subjects to faculty first.
                 </p>
               </div>
             ) : (
-              <div className="space-y-2 max-h-64 overflow-y-auto">
+              <div className="space-y-1">
                 {assignments.map((assignment, index) => (
                   <div
                     key={`${assignment.subject_id}-${assignment.faculty_id}-${index}`}
-                    className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-800"
+                    className="flex items-center justify-between p-3 rounded-lg bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-800 hover:border-[#1266f1]/30 dark:hover:border-[#1266f1]/30 transition-all"
                   >
-                    <div className="h-10 w-10 rounded-lg bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center">
-                      <BookOpen className="h-5 w-5 text-violet-600 dark:text-violet-400" />
-                    </div>
                     <div className="flex-1">
                       <p className="text-sm font-medium text-gray-900 dark:text-white">
                         {assignment.subject_name}
                       </p>
-                      <p className="text-xs text-muted-foreground">
-                        {assignment.subject_code} - {assignment.credits} credit(s)
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                        {assignment.subject_code} • {assignment.credits} credit{assignment.credits > 1 ? 's' : ''}
                       </p>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <Users className="h-4 w-4 text-gray-400" />
-                      <span className="text-sm text-gray-600 dark:text-gray-400">
+                    <div className="text-right">
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
                         {assignment.faculty_name}
-                      </span>
+                      </p>
                     </div>
                   </div>
                 ))}
@@ -361,7 +357,7 @@ export default function AdminTimetablePage() {
         <Button
           onClick={handleGenerate}
           disabled={generating || assignments.length === 0 || bulkGenerating}
-          className="bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 gap-2"
+          className="bg-[#1266f1] hover:bg-[#0d52d1] gap-2"
         >
           {generating ? (
             <>

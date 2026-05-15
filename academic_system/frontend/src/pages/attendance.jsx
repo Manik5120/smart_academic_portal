@@ -282,7 +282,7 @@ export default function AttendancePage() {
                 <Label>Subject</Label>
                 {loading ? (
                   <div className="flex items-center justify-center h-10">
-                    <Loader2 className="h-5 w-5 animate-spin text-violet-600" />
+                    <Loader2 className="h-5 w-5 animate-spin text-[#1266f1]" />
                   </div>
                 ) : (
                   <select
@@ -381,7 +381,7 @@ export default function AttendancePage() {
               <Button
                 onClick={handleMarkAttendance}
                 disabled={!selectedSubject || students.length === 0 || markingAttendance}
-                className="w-full bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700"
+                className="w-full bg-[#1266f1] hover:bg-[#0d52d1]"
               >
                 {markingAttendance ? (
                   <>
@@ -548,7 +548,7 @@ export default function AttendancePage() {
         {summaryLoading ? (
           <Card>
             <CardContent className="flex items-center justify-center py-12">
-              <Loader2 className="h-8 w-8 animate-spin text-violet-600" />
+              <Loader2 className="h-8 w-8 animate-spin text-[#1266f1]" />
             </CardContent>
           </Card>
         ) : attendanceSummary.length === 0 ? (
@@ -684,9 +684,9 @@ export default function AttendancePage() {
                           <div className="flex items-center gap-4 flex-1">
                             <div className={cn(
                               "w-12 h-12 rounded-lg flex items-center justify-center font-bold",
-                              percentage >= 75 ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400" :
-                              percentage >= 60 ? "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400" :
-                              "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
+                              percentage >= 75 ? " text-green-700 dark:bg-green-900/30 dark:text-green-400" :
+                              percentage >= 60 ? " text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400" :
+                              " text-red-700 dark:bg-red-900/30 dark:text-red-400"
                             )}>
                               {percentage}%
                             </div>
