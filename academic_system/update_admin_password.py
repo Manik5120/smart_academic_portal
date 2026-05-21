@@ -18,7 +18,7 @@ async def update_admin_password():
     db = client[os.getenv("MONGODB_DATABASE", "academic_system")]
 
     # New admin password
-    admin_email = "admin@cse.edu"
+    admin_email = "admin@nitsri.ac.in"
     new_password = "Admin123"
 
     # Hash new password

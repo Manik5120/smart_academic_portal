@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Eye, EyeOff, Mail, Lock, User, Briefcase } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { ArrowLeft, CheckCircle2, Eye, EyeOff, Mail, Lock, User, Briefcase, XCircle } from 'lucide-react';
 import { authService } from '../services/auth';
 import { setToken, setUser } from '../lib/api';
 import { Card, CardContent } from '../components/ui/card';
@@ -9,9 +9,12 @@ import { Button } from '../components/ui/button';
 import nitLogo from '../../../uploads/National_Institute_of_Technology,_Srinagar_Logo.png';
 import clgBg from '../../../uploads/clg_bg.webp';
 
+const ALLOWED_EMAIL_DOMAIN = 'nitsri.ac.in';
+
 export default function LoginPage() {
   const navigate = useNavigate();
-  const [isLogin, setIsLogin] = useState(true);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [isLogin, setIsLogin] = useState(searchParams.get('mode') !== 'register');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [formData, setFormData] = useState({
@@ -30,12 +33,35 @@ export default function LoginPage() {
   const [submitError, setSubmitError] = useState('');
   const [loading, setLoading] = useState(false);
 
+  useEffect(() => {
+    const nextIsLogin = searchParams.get('mode') !== 'register';
+    setIsLogin(prev => (prev === nextIsLogin ? prev : nextIsLogin));
+  }, [searchParams]);
+
+  const passwordCriteria = [
+    {
+      label: '8 to 20 characters',
+      met: formData.password.length >= 8 && formData.password.length <= 20,
+    },
+    {
+      label: 'At least one capital letter',
+      met: /[A-Z]/.test(formData.password),
+    },
+    {
+      label: 'At least one number',
+      met: /\d/.test(formData.password),
+    },
+  ];
+
   const validateField = (name, value) => {
     switch (name) {
       case 'email':
         if (!value) return 'Email is required';
         if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(value)) {
           return 'Please enter a valid email address';
+        }
+        if (!value.trim().toLowerCase().endsWith(`@${ALLOWED_EMAIL_DOMAIN}`)) {
+          return `Only ${ALLOWED_EMAIL_DOMAIN} email addresses are allowed`;
         }
         return '';
       case 'password':
@@ -54,6 +80,9 @@ export default function LoginPage() {
         return '';
       case 'roll_number':
         if (!isLogin && formData.role === 'student' && !value) return 'Roll number is required';
+        return '';
+      case 'employee_id':
+        if (!isLogin && formData.role === 'faculty' && !value) return 'Faculty ID is required';
         return '';
       case 'semester':
       case 'section':
@@ -78,11 +107,35 @@ export default function LoginPage() {
     setErrors(prev => ({ ...prev, [name]: validateField(name, formData[name]) }));
   };
 
+  const resetAuthForm = () => {
+    setErrors({});
+    setTouched({});
+    setSubmitError('');
+    setFormData({
+      email: '',
+      password: '',
+      confirm_password: '',
+      full_name: '',
+      role: 'student',
+      semester: '1',
+      section: 'A',
+      roll_number: '',
+      employee_id: '',
+    });
+  };
+
   const validateForm = () => {
     const newErrors = {};
     const fieldsToValidate = isLogin
       ? ['email', 'password']
-      : ['email', 'password', 'confirm_password', 'full_name', ...(formData.role === 'student' ? ['semester', 'section', 'roll_number'] : [])];
+      : [
+          'email',
+          'password',
+          'confirm_password',
+          'full_name',
+          ...(formData.role === 'student' ? ['semester', 'section', 'roll_number'] : []),
+          ...(formData.role === 'faculty' ? ['employee_id'] : []),
+        ];
 
     fieldsToValidate.forEach(field => {
       const error = validateField(field, formData[field]);
@@ -125,9 +178,14 @@ export default function LoginPage() {
           registerData.semester = parseInt(formData.semester);
           registerData.section = formData.section;
           registerData.roll_number = formData.roll_number;
+        } else if (formData.role === 'faculty') {
+          registerData.employee_id = formData.employee_id;
         }
 
         await authService.register(registerData);
+        const nextParams = new URLSearchParams(searchParams);
+        nextParams.delete('mode');
+        setSearchParams(nextParams, { replace: true });
         setIsLogin(true);
         setFormData(prev => ({ ...prev, password: '' }));
       }
@@ -139,11 +197,71 @@ export default function LoginPage() {
   };
 
   const switchMode = () => {
-    setIsLogin(!isLogin);
-    setErrors({});
-    setTouched({});
-    setSubmitError('');
-    setFormData(prev => ({ ...prev, password: '', confirm_password: '' }));
+    const nextIsLogin = !isLogin;
+    const nextParams = new URLSearchParams(searchParams);
+    if (nextIsLogin) {
+      nextParams.delete('mode');
+    } else {
+      nextParams.set('mode', 'register');
+    }
+
+    setSearchParams(nextParams, { replace: true });
+    setIsLogin(nextIsLogin);
+    resetAuthForm();
+  };
+
+  const openLoginMode = () => {
+    const nextParams = new URLSearchParams(searchParams);
+    nextParams.delete('mode');
+    setSearchParams(nextParams, { replace: true });
+    setIsLogin(true);
+    resetAuthForm();
+  };
+
+  const openRegisterMode = () => {
+    const nextParams = new URLSearchParams(searchParams);
+    nextParams.set('mode', 'register');
+    setSearchParams(nextParams, { replace: true });
+    setIsLogin(false);
+    resetAuthForm();
+  };
+
+  const switchRegistrationRole = (role) => {
+    setFormData(prev => ({
+      ...prev,
+      role,
+      password: '',
+      confirm_password: '',
+    }));
+
+    setErrors(prev => ({
+      ...prev,
+      password: '',
+      confirm_password: '',
+      roll_number: '',
+      employee_id: '',
+      semester: '',
+      section: '',
+    }));
+
+    setTouched(prev => ({
+      ...prev,
+      password: false,
+      confirm_password: false,
+      roll_number: false,
+      employee_id: false,
+      semester: false,
+      section: false,
+    }));
+  };
+
+  const handleGoBack = () => {
+    if (window.history.length > 1) {
+      navigate(-1);
+      return;
+    }
+
+    navigate('/');
   };
 
   return (
@@ -153,6 +271,17 @@ export default function LoginPage() {
     >
       {/* Overlay for better readability */}
       <div className="absolute inset-0 bg-white/30 dark:bg-gray-950/60 backdrop-blur-[2px]" />
+
+      <div className="absolute left-4 top-4 z-20 md:left-6 md:top-6">
+        <button
+          type="button"
+          onClick={handleGoBack}
+          className="inline-flex items-center gap-2 rounded-full border border-white/70 bg-white/85 px-4 py-2 text-sm font-semibold text-slate-700 shadow-lg shadow-slate-900/10 backdrop-blur-md transition-all duration-200 hover:-translate-y-0.5 hover:text-[#1266f1]"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Back
+        </button>
+      </div>
 
       {/* Content */}
       <div className="flex-1 flex items-center justify-center px-4 py-8 relative z-10">
@@ -176,7 +305,7 @@ export default function LoginPage() {
         <div className="flex mb-6 bg-gray-100 dark:bg-gray-800 rounded-xl p-1">
           <button
             type="button"
-            onClick={() => setIsLogin(true)}
+            onClick={openLoginMode}
             className={`flex-1 py-2.5 px-4 rounded-lg text-sm font-medium transition-all duration-200 ${
               isLogin
                 ? 'bg-white dark:bg-gray-700 text-[#1266f1] dark:text-[#5a9fff] shadow-sm'
@@ -187,7 +316,7 @@ export default function LoginPage() {
           </button>
           <button
             type="button"
-            onClick={() => setIsLogin(false)}
+            onClick={openRegisterMode}
             className={`flex-1 py-2.5 px-4 rounded-lg text-sm font-medium transition-all duration-200 ${
               !isLogin
                 ? 'bg-white dark:bg-gray-700 text-[#1266f1] dark:text-[#5a9fff] shadow-sm'
@@ -218,7 +347,7 @@ export default function LoginPage() {
                   <div className="grid grid-cols-2 gap-3">
                     <button
                       type="button"
-                      onClick={() => handleChange('role', 'student')}
+                      onClick={() => switchRegistrationRole('student')}
                       className={`flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all duration-200 ${
                         formData.role === 'student'
                           ? 'border-[#1266f1] bg-[#1266f1]/10 dark:bg-[#1266f1]/20'
@@ -230,7 +359,7 @@ export default function LoginPage() {
                     </button>
                     <button
                       type="button"
-                      onClick={() => handleChange('role', 'faculty')}
+                      onClick={() => switchRegistrationRole('faculty')}
                       className={`flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all duration-200 ${
                         formData.role === 'faculty'
                           ? 'border-[#1266f1] bg-[#1266f1]/10 dark:bg-[#1266f1]/20'
@@ -323,22 +452,52 @@ export default function LoginPage() {
 
                       <div className="space-y-2 col-span-2">
                         <Label htmlFor="roll_number" className="text-gray-700 dark:text-gray-300">
-                          Roll Number
+                          Enroll No.
                         </Label>
                         <Input
                           id="roll_number"
                           type="text"
-                          placeholder="e.g., 2024001"
+                          placeholder="2022BCSE021"
                           value={formData.roll_number}
-                          onChange={e => handleChange('roll_number', e.target.value)}
-                          onBlur={() => handleBlur('roll_number')}
-                          className={touched.roll_number && errors.roll_number ? 'border-red-500 focus-visible:ring-red-500' : ''}
+                          onChange={e => handleChange('roll_number', e.target.value.toUpperCase())}
+                          onBlur={() => {
+                            handleChange('roll_number', formData.roll_number.toUpperCase());
+                            handleBlur('roll_number');
+                          }}
+                          className={`uppercase ${touched.roll_number && errors.roll_number ? 'border-red-500 focus-visible:ring-red-500' : ''}`}
                           aria-invalid={touched.roll_number && errors.roll_number ? 'true' : 'false'}
                         />
                         {touched.roll_number && errors.roll_number && (
                           <p className="text-xs text-red-600 dark:text-red-400">{errors.roll_number}</p>
                         )}
                       </div>
+                    </div>
+                  )}
+
+                  {formData.role === 'faculty' && (
+                    <div className="space-y-2">
+                      <Label htmlFor="employee_id" className="text-gray-700 dark:text-gray-300">
+                        Faculty ID
+                      </Label>
+                      <div className="relative">
+                        <Briefcase className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+                        <Input
+                          id="employee_id"
+                          type="text"
+                          placeholder="e.g., FAC001"
+                          value={formData.employee_id}
+                          onChange={e => handleChange('employee_id', e.target.value)}
+                          onBlur={() => handleBlur('employee_id')}
+                          className={`pl-10 ${touched.employee_id && errors.employee_id ? 'border-red-500 focus-visible:ring-red-500' : ''}`}
+                          aria-invalid={touched.employee_id && errors.employee_id ? 'true' : 'false'}
+                          aria-describedby={touched.employee_id && errors.employee_id ? 'employee_id-error' : undefined}
+                        />
+                      </div>
+                      {touched.employee_id && errors.employee_id && (
+                        <p id="employee_id-error" className="text-xs text-red-600 dark:text-red-400">
+                          {errors.employee_id}
+                        </p>
+                      )}
                     </div>
                   )}
                 </>
@@ -354,7 +513,7 @@ export default function LoginPage() {
                   <Input
                     id="email"
                     type="email"
-                    placeholder="your.email@cse.edu"
+                    placeholder={`your.email@${ALLOWED_EMAIL_DOMAIN}`}
                     value={formData.email}
                     onChange={e => handleChange('email', e.target.value)}
                     onBlur={() => handleBlur('email')}
@@ -401,6 +560,31 @@ export default function LoginPage() {
                   <p id="password-error" className="text-xs text-red-600 dark:text-red-400">
                     {errors.password}
                   </p>
+                )}
+                {!isLogin && formData.password && (
+                  <div className="space-y-2 rounded-lg border border-slate-200/80 bg-slate-50/80 p-3 dark:border-slate-700 dark:bg-slate-800/70">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-300">
+                      Password must have:
+                    </p>
+                    <div className="space-y-2">
+                      {passwordCriteria.map((criterion) => {
+                        const Icon = criterion.met ? CheckCircle2 : XCircle;
+                        return (
+                          <div
+                            key={criterion.label}
+                            className={`flex items-center gap-2 text-xs font-medium ${
+                              criterion.met
+                                ? 'text-green-600 dark:text-green-400'
+                                : 'text-red-600 dark:text-red-400'
+                            }`}
+                          >
+                            <Icon className="h-3.5 w-3.5 shrink-0" />
+                            <span>{criterion.label}</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
                 )}
               </div>
 

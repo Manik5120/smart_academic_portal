@@ -11,35 +11,35 @@ load_dotenv()
 # Test user data
 FACULTY_USERS = [
     {
-        "email": "faculty1@cse.edu",
+        "email": "faculty1@nitsri.ac.in",
         "password": "Faculty1",
         "full_name": "Dr. Rajesh Kumar",
         "employee_id": "FAC001",
         "department": "Computer Science"
     },
     {
-        "email": "faculty2@cse.edu",
+        "email": "faculty2@nitsri.ac.in",
         "password": "Faculty2",
         "full_name": "Dr. Priya Sharma",
         "employee_id": "FAC002",
         "department": "Computer Science"
     },
     {
-        "email": "faculty3@cse.edu",
+        "email": "faculty3@nitsri.ac.in",
         "password": "Faculty3",
         "full_name": "Dr. Amit Verma",
         "employee_id": "FAC003",
         "department": "Computer Science"
     },
     {
-        "email": "faculty4@cse.edu",
+        "email": "faculty4@nitsri.ac.in",
         "password": "Faculty4",
         "full_name": "Dr. Sunita Gupta",
         "employee_id": "FAC004",
         "department": "Computer Science"
     },
     {
-        "email": "faculty5@cse.edu",
+        "email": "faculty5@nitsri.ac.in",
         "password": "Faculty5",
         "full_name": "Dr. Vikram Singh",
         "employee_id": "FAC005",
@@ -49,7 +49,7 @@ FACULTY_USERS = [
 
 STUDENT_USERS = [
     {
-        "email": "student1@cse.edu",
+        "email": "student1@nitsri.ac.in",
         "password": "Student1",
         "full_name": "Arjun Mehta",
         "roll_number": "2024001",
@@ -57,7 +57,7 @@ STUDENT_USERS = [
         "section": "A"
     },
     {
-        "email": "student2@cse.edu",
+        "email": "student2@nitsri.ac.in",
         "password": "Student2",
         "full_name": "Priya Patel",
         "roll_number": "2024002",
@@ -65,7 +65,7 @@ STUDENT_USERS = [
         "section": "A"
     },
     {
-        "email": "student3@cse.edu",
+        "email": "student3@nitsri.ac.in",
         "password": "Student3",
         "full_name": "Rahul Sharma",
         "roll_number": "2024003",
@@ -73,7 +73,7 @@ STUDENT_USERS = [
         "section": "A"
     },
     {
-        "email": "student4@cse.edu",
+        "email": "student4@nitsri.ac.in",
         "password": "Student4",
         "full_name": "Sneha Reddy",
         "roll_number": "2024004",
@@ -81,7 +81,7 @@ STUDENT_USERS = [
         "section": "A"
     },
     {
-        "email": "student5@cse.edu",
+        "email": "student5@nitsri.ac.in",
         "password": "Student5",
         "full_name": "Aditya Kumar",
         "roll_number": "2024005",
@@ -89,7 +89,7 @@ STUDENT_USERS = [
         "section": "A"
     },
     {
-        "email": "student6@cse.edu",
+        "email": "student6@nitsri.ac.in",
         "password": "Student6",
         "full_name": "Kavya Nair",
         "roll_number": "2024006",
@@ -97,7 +97,7 @@ STUDENT_USERS = [
         "section": "B"
     },
     {
-        "email": "student7@cse.edu",
+        "email": "student7@nitsri.ac.in",
         "password": "Student7",
         "full_name": "Rohan Das",
         "roll_number": "2024007",
@@ -105,7 +105,7 @@ STUDENT_USERS = [
         "section": "B"
     },
     {
-        "email": "student8@cse.edu",
+        "email": "student8@nitsri.ac.in",
         "password": "Student8",
         "full_name": "Ishita Joshi",
         "roll_number": "2024008",
@@ -113,7 +113,7 @@ STUDENT_USERS = [
         "section": "B"
     },
     {
-        "email": "student9@cse.edu",
+        "email": "student9@nitsri.ac.in",
         "password": "Student9",
         "full_name": "Vivek Iyer",
         "roll_number": "2024009",
@@ -121,7 +121,7 @@ STUDENT_USERS = [
         "section": "B"
     },
     {
-        "email": "student10@cse.edu",
+        "email": "student10@nitsri.ac.in",
         "password": "Student10",
         "full_name": "Meera Srinivasan",
         "roll_number": "2024010",
@@ -251,7 +251,7 @@ async def save_credentials_to_file():
 
     content += "ADMIN CREDENTIALS:\n"
     content += "-" * 70 + "\n"
-    content += "Email: admin@cse.edu | Password: admin123\n\n"
+    content += "Email: admin@nitsri.ac.in | Password: Admin123\n\n"
 
     content += "FACULTY CREDENTIALS (5 users):\n"
     content += "-" * 70 + "\n"

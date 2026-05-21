@@ -10,6 +10,7 @@ from app.infrastructure.security import (
     hash_password, verify_password,
     create_access_token, create_refresh_token
 )
+from app.infrastructure.email_policy import ensure_allowed_institution_email
 
 
 @dataclass
@@ -75,8 +76,10 @@ class AuthenticationUseCase:
         Raises:
             ValueError: If credentials are invalid or user is inactive
         """
+        normalized_email = ensure_allowed_institution_email(request.email, "log in to this portal")
+
         # Find user by email
-        user = await self.user_repository.find_by_email(request.email)
+        user = await self.user_repository.find_by_email(normalized_email)
         if not user:
             raise ValueError("Invalid email or password")
 
@@ -112,6 +115,8 @@ class AuthenticationUseCase:
         Raises:
             ValueError: If user already exists or validation fails
         """
+        request.email = ensure_allowed_institution_email(request.email, "register on this portal")
+
         # Check if user already exists
         if await self.user_repository.exists(request.email):
             raise ValueError("User with this email already exists")

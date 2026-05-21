@@ -15,7 +15,7 @@ async def create_admin():
     db = client[os.getenv("MONGODB_DATABASE", "academic_system")]
 
     # Admin user data
-    admin_email = "admin@cse.edu"
+    admin_email = "admin@nitsri.ac.in"
     admin_password = "Admin123"
     admin_name = "System Administrator"
 

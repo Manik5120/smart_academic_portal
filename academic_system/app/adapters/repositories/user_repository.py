@@ -6,6 +6,7 @@ from motor.motor_asyncio import AsyncIOMotorDatabase
 
 from app.domain.entities.user import User, UserRole
 from app.domain.interfaces.repositories import IUserRepository
+from app.infrastructure.email_policy import ensure_allowed_institution_email
 from app.infrastructure.security import hash_password
 
 
@@ -153,9 +154,11 @@ class UserRepository(IUserRepository):
         """Create a new user with hashed password."""
         from datetime import datetime
 
+        normalized_email = ensure_allowed_institution_email(email, "be used for an account on this portal")
+
         user = User(
             id="",  # Will be set by save()
-            email=email.lower(),
+            email=normalized_email,
             password_hash=hash_password(password),
             full_name=full_name,
             role=role,

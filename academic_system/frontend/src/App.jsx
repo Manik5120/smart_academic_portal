@@ -11,6 +11,7 @@ import {
 import { Layout } from './components/layout/layout';
 
 // Pages
+import HomePage from './pages/home';
 import LoginPage from './pages/login';
 import DashboardPage from './pages/dashboard';
 import TimetablePage from './pages/timetable';
@@ -66,21 +67,46 @@ function ProtectedRoute({ children, allowedRoles = [] }) {
   return <Layout currentRole={user.role}>{children}</Layout>;
 }
 
+function PublicRoute({ children, redirectAuthenticatedTo = null }) {
+  const user = getUser();
+  const token = getToken();
+  const tokenExpired = isTokenExpired(token);
+
+  useEffect(() => {
+    if (token && tokenExpired) {
+      clearAuthSession();
+    }
+  }, [token, tokenExpired]);
+
+  if (user && token && !tokenExpired && redirectAuthenticatedTo) {
+    return <Navigate to={redirectAuthenticatedTo} replace />;
+  }
+
+  return children;
+}
+
 function App() {
   return (
     <Routes>
       {/* Public Route */}
-      <Route path="/login" element={<LoginPage />} />
-
-      {/* Protected Routes */}
       <Route
         path="/"
         element={
-          <ProtectedRoute>
-            <Navigate to="/dashboard" replace />
-          </ProtectedRoute>
+          <PublicRoute redirectAuthenticatedTo="/dashboard">
+            <HomePage />
+          </PublicRoute>
         }
       />
+      <Route
+        path="/login"
+        element={
+          <PublicRoute redirectAuthenticatedTo="/dashboard">
+            <LoginPage />
+          </PublicRoute>
+        }
+      />
+
+      {/* Protected Routes */}
       <Route
         path="/dashboard"
         element={
@@ -179,7 +205,7 @@ function App() {
       />
 
       {/* Fallback */}
-      <Route path="*" element={<Navigate to="/dashboard" replace />} />
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 }

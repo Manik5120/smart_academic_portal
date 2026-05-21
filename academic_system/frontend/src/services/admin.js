@@ -18,7 +18,10 @@ export const adminService = {
 
   // Get users list
   getUsers: async (params = {}) => {
-    const searchParams = new URLSearchParams(params);
+    const searchParams = new URLSearchParams({
+      limit: '100',
+      ...params,
+    });
     return await api(`/admin/users?${searchParams}`);
   },
 

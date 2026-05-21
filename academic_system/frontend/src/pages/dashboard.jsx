@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { api, clearAuthSession, getUser } from '../lib/api';
+import { api, getUser } from '../lib/api';
 import { Card, CardContent } from '../components/ui/card';
-import { Button } from '../components/ui/button';
 import {
   Calendar,
   ClipboardList,
@@ -12,7 +11,6 @@ import {
   BookOpen,
   GraduationCap,
   Shield,
-  LogOut,
   AlertCircle,
 } from 'lucide-react';
 
@@ -56,16 +54,11 @@ export default function DashboardPage() {
     fetchStats();
   }, [user, navigate]);
 
-  const handleLogout = () => {
-    clearAuthSession();
-    navigate('/login');
-  };
-
   const getGreeting = () => {
-    const hour = new Date().getHours();
-    if (hour < 12) return 'Good morning';
-    if (hour < 17) return 'Good afternoon';
-    return 'Good evening';
+    // const hour = new Date().getHours();
+    // if (hour < 12) return 'Good morning';
+    // if (hour < 17) return 'Good afternoon';
+    return 'Hey';
   };
 
   const getDisplayName = () => {
@@ -155,10 +148,6 @@ export default function DashboardPage() {
             {user?.role === 'admin' && 'System Administrator'}
           </p>
         </div>
-        <Button variant="outline" onClick={handleLogout} className="gap-2">
-          <LogOut className="h-4 w-4" />
-          Logout
-        </Button>
       </div>
 
       {/* Error Alert */}
