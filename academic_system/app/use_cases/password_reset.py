@@ -1,6 +1,6 @@
 """Password reset use cases."""
 
-import random
+import secrets
 import string
 from typing import Optional
 
@@ -30,7 +30,7 @@ class PasswordResetUseCase:
 
     def _generate_otp(self) -> str:
         """Generate a 6-digit numeric OTP."""
-        return "".join(random.choices(string.digits, k=self.OTP_LENGTH))
+        return "".join(secrets.choice(string.digits) for _ in range(self.OTP_LENGTH))
 
     async def request_otp(self, request: ForgotPasswordRequest) -> OtpResponse:
         """
