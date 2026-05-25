@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from motor.motor_asyncio import AsyncIOMotorDatabase
 
 from app.domain.entities.user import User, UserRole
+from app.domain.entities.otp import ForgotPasswordSchema, VerifyOtpSchema, ResetPasswordSchema
 from app.domain.interfaces.repositories import IUserRepository
 from app.adapters.repositories import UserRepository
 from app.use_cases.auth import (
@@ -14,8 +15,10 @@ from app.use_cases.auth import (
     RegisterResponse,
     ChangePasswordRequest
 )
+from app.use_cases.password_reset import PasswordResetUseCase
 from app.infrastructure.dependencies import get_current_user, get_current_admin
 from app.infrastructure.database import get_database
+from app.infrastructure.redis import get_redis
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
@@ -26,6 +29,15 @@ async def get_auth_use_case(
     """Dependency to get auth use case."""
     user_repo = UserRepository(db)
     return AuthenticationUseCase(user_repo)
+
+
+async def get_password_reset_use_case(
+    db: AsyncIOMotorDatabase = Depends(get_database),
+    redis = Depends(get_redis)
+) -> PasswordResetUseCase:
+    """Dependency to get password reset use case."""
+    user_repo = UserRepository(db)
+    return PasswordResetUseCase(user_repo, redis)
 
 
 @router.post("/login", response_model=dict)
@@ -122,3 +134,64 @@ async def refresh_token(
     """Refresh access token."""
     token = await auth_use_case.refresh_token(current_user.id)
     return {"access_token": token, "token_type": "bearer"}
+
+
+@router.post("/forgot-password")
+async def forgot_password(
+    request: ForgotPasswordSchema,
+    password_reset_use_case: PasswordResetUseCase = Depends(get_password_reset_use_case)
+):
+    """Request password reset OTP via email."""
+    try:
+        from app.domain.entities.otp import ForgotPasswordRequest
+        req = ForgotPasswordRequest(email=request.email)
+        response = await password_reset_use_case.request_otp(req)
+        return {
+            "message": response.message,
+            "expiry_seconds": response.expiry_seconds
+        }
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e)
+        )
+
+
+@router.post("/verify-otp")
+async def verify_otp(
+    request: VerifyOtpSchema,
+    password_reset_use_case: PasswordResetUseCase = Depends(get_password_reset_use_case)
+):
+    """Verify OTP for password reset."""
+    try:
+        from app.domain.entities.otp import VerifyOtpRequest
+        req = VerifyOtpRequest(email=request.email, otp=request.otp)
+        await password_reset_use_case.verify_otp(req)
+        return {"message": "OTP verified successfully", "valid": True}
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e)
+        )
+
+
+@router.post("/reset-password")
+async def reset_password(
+    request: ResetPasswordSchema,
+    password_reset_use_case: PasswordResetUseCase = Depends(get_password_reset_use_case)
+):
+    """Reset password using verified OTP."""
+    try:
+        from app.domain.entities.otp import ResetPasswordRequest
+        req = ResetPasswordRequest(
+            email=request.email,
+            otp=request.otp,
+            new_password=request.new_password
+        )
+        await password_reset_use_case.reset_password(req)
+        return {"message": "Password reset successfully"}
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e)
+        )
