@@ -34,4 +34,28 @@ export const authService = {
       }),
     });
   },
+
+  forgotPassword: async (email) => {
+    const data = await api('/auth/forgot-password', {
+      method: 'POST',
+      body: JSON.stringify({ email }),
+    });
+    return data;
+  },
+
+  verifyOtp: async (email, otp) => {
+    const data = await api('/auth/verify-otp', {
+      method: 'POST',
+      body: JSON.stringify({ email, otp }),
+    });
+    return data;
+  },
+
+  resetPassword: async (email, otp, newPassword) => {
+    const data = await api('/auth/reset-password', {
+      method: 'POST',
+      body: JSON.stringify({ email, otp, new_password: newPassword }),
+    });
+    return data;
+  },
 };
