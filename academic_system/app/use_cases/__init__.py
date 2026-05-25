@@ -1,5 +1,6 @@
 """Use cases - application business logic."""
 
+from .password_reset import PasswordResetUseCase
 from .auth import *
 from .timetable import *
 from .attendance import *
