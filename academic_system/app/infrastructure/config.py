@@ -62,13 +62,10 @@ class Settings(BaseSettings):
     redis_db: int = Field(default=0, description="Redis database number")
     redis_password_reset_ttl: int = Field(default=600, description="Password reset OTP TTL in seconds (10 minutes)")
 
-    # Email (Gmail SMTP)
+    # Email (Resend API)
     email_enabled: bool = Field(default=True, description="Enable email sending")
-    email_host: str = Field(default="smtp.gmail.com", description="SMTP host")
-    email_port: int = Field(default=587, description="SMTP port")
-    email_username: str = Field(default="", description="Email username")
-    email_password: str = Field(default="", description="Email app password")
-    email_from: str = Field(default="Academic Portal <noreply@nitsri.ac.in>", description="From email address")
+    resend_api_key: str = Field(default="", description="Resend API key")
+    email_from: str = Field(default="onboarding@resend.dev", description="From email address")
     email_from_name: str = Field(default="NIT Srinagar Academic Portal", description="From name")
 
     # CORS

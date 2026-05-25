@@ -1,24 +1,20 @@
-"""Email service using Gmail SMTP."""
+"""Email service using Resend API."""
 
-import asyncio
-from email.message import EmailMessage
-import aiosmtplib
 from typing import List
+import httpx
 
 from .config import settings
 
 
 class EmailService:
-    """Async email service using SMTP."""
+    """Async email service using Resend API."""
 
     def __init__(self):
-        self.host = settings.email_host
-        self.port = settings.email_port
-        self.username = settings.email_username
-        self.password = settings.email_password
+        self.api_key = settings.resend_api_key
         self.from_email = settings.email_from
         self.from_name = settings.email_from_name
         self.enabled = settings.email_enabled
+        self.api_url = "https://api.resend.com/emails"
 
     async def send_email(
         self,
@@ -27,35 +23,46 @@ class EmailService:
         plain_text: str,
         html_text: str | None = None
     ) -> bool:
-        """Send an email via SMTP."""
+        """Send an email via Resend API."""
         if not self.enabled:
             print(f"Email disabled. Would send to {to_email}: {subject}")
             print(f"Body: {plain_text}")
             return True
 
-        if not self.username or not self.password:
-            print("Email credentials not configured. Skipping email send.")
+        if not self.api_key:
+            print("Resend API key not configured. Skipping email send.")
             return False
 
-        message = EmailMessage()
-        message["From"] = f"{self.from_name} <{self.username}>"
-        message["To"] = to_email if isinstance(to_email, str) else ", ".join(to_email)
-        message["Subject"] = subject
-        message.set_content(plain_text)
+        # Prepare recipients
+        to_list = [to_email] if isinstance(to_email, str) else to_email
+
+        # Prepare email payload
+        payload = {
+            "from": f"{self.from_name} <{self.from_email}>",
+            "to": to_list,
+            "subject": subject,
+            "text": plain_text,
+        }
 
         if html_text:
-            message.add_alternative(html_text, subtype="html")
+            payload["html"] = html_text
 
         try:
-            async with aiosmtplib.SMTP(
-                hostname=self.host,
-                port=self.port,
-                start_tls=True,
-                timeout=10  # 10 second timeout
-            ) as smtp:
-                await smtp.login(self.username, self.password)
-                await smtp.send_message(message)
-            return True
+            async with httpx.AsyncClient(timeout=30.0) as client:
+                response = await client.post(
+                    self.api_url,
+                    headers={
+                        "Authorization": f"Bearer {self.api_key}",
+                        "Content-Type": "application/json"
+                    },
+                    json=payload
+                )
+
+                if response.status_code in (200, 202):
+                    return True
+                else:
+                    print(f"Resend API error: {response.status_code} - {response.text}")
+                    return False
         except Exception as e:
             print(f"Failed to send email: {e}")
             return False
