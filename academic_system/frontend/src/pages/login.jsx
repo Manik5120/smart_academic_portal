@@ -6,6 +6,7 @@ import { setToken, setUser } from '../lib/api';
 import { Card, CardContent } from '../components/ui/card';
 import { Input, Label } from '../components/ui/input';
 import { Button } from '../components/ui/button';
+import ForgotPasswordModal from '../components/auth/ForgotPasswordModal';
 import nitLogo from '../../../uploads/National_Institute_of_Technology,_Srinagar_Logo.png';
 import clgBg from '../../../uploads/clg_bg.webp';
 
@@ -32,6 +33,7 @@ export default function LoginPage() {
   const [touched, setTouched] = useState({});
   const [submitError, setSubmitError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [isForgotPasswordOpen, setIsForgotPasswordOpen] = useState(false);
 
   useEffect(() => {
     const nextIsLogin = searchParams.get('mode') !== 'register';
@@ -586,6 +588,18 @@ export default function LoginPage() {
                     </div>
                   </div>
                 )}
+                {/* Forgot Password Link - Only for login mode */}
+                {isLogin && (
+                  <div className="text-right">
+                    <button
+                      type="button"
+                      onClick={() => setIsForgotPasswordOpen(true)}
+                      className="text-sm text-[#1266f1] dark:text-[#5a9fff] hover:text-[#0d52d1] dark:hover:text-[#7ab3ff] font-medium transition-colors"
+                    >
+                      Forgot Password?
+                    </button>
+                  </div>
+                )}
               </div>
 
               {/* Confirm Password - Only for registration */}
@@ -657,6 +671,13 @@ export default function LoginPage() {
         </Card>
         </div>
       </div>
+
+      {/* Forgot Password Modal */}
+      <ForgotPasswordModal
+        isOpen={isForgotPasswordOpen}
+        onClose={() => setIsForgotPasswordOpen(false)}
+        initialEmail={formData.email}
+      />
 
       {/* Footer - Full Width */}
       <footer className="relative z-10 bg-white dark:bg-gray-900 py-2 text-center shadow-lg">
