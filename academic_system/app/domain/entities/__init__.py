@@ -35,6 +35,15 @@ from .feasibility import (
     GenerationTelemetry,
     FeasibilityReport,
 )
+from .otp import (
+    ForgotPasswordRequest,
+    VerifyOtpRequest,
+    ResetPasswordRequest,
+    OtpResponse,
+    ForgotPasswordSchema,
+    VerifyOtpSchema,
+    ResetPasswordSchema
+)
 
 __all__ = [
     # User
@@ -81,4 +90,12 @@ __all__ = [
     "FeasibilityTelemetry",
     "GenerationTelemetry",
     "FeasibilityReport",
+    # OTP
+    "ForgotPasswordRequest",
+    "VerifyOtpRequest",
+    "ResetPasswordRequest",
+    "OtpResponse",
+    "ForgotPasswordSchema",
+    "VerifyOtpSchema",
+    "ResetPasswordSchema",
 ]
