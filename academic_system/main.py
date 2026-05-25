@@ -9,6 +9,7 @@ from pathlib import Path
 
 from app.infrastructure.config import settings
 from app.infrastructure.database import db, init_indexes
+from app.infrastructure.redis import redis_client
 from app.domain.exceptions import AuthorizationError, ResourceNotFoundError, ValidationError
 from app.adapters.controllers import (
     auth_router,
@@ -35,12 +36,20 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         print(f"Warning: Could not initialize indexes: {e}")
 
+    # Connect to Redis
+    try:
+        await redis_client.connect()
+        print("Redis connected successfully.")
+    except Exception as e:
+        print(f"Warning: Could not connect to Redis: {e}")
+
     print("Application started successfully!")
 
     yield
 
     # Shutdown
     print("Shutting down...")
+    await redis_client.disconnect()
     await db.disconnect()
     print("Application stopped.")
 
