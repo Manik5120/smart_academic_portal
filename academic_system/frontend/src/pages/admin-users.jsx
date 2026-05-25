@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../components/ui/card';
 import { Button } from '../components/ui/button';
@@ -23,7 +23,8 @@ import { getUser } from '../lib/api';
 
 export default function AdminUsersPage() {
   const currentUser = getUser();
-  const [users, setUsers] = useState([]);
+  const [allUsersList, setAllUsersList] = useState([]); // All users from backend
+  const [stats, setStats] = useState({ total: 0, students: 0, faculty: 0, admins: 0 }); // Stats from backend
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [roleFilter, setRoleFilter] = useState('');
@@ -43,18 +44,28 @@ export default function AdminUsersPage() {
     department: '',
   });
 
-  // Fetch users with all filters
-  const fetchUsers = async () => {
+  // Fetch overall stats from backend
+  const fetchStats = async () => {
+    try {
+      const data = await adminService.getStats();
+      setStats({
+        total: data.total_users || 0,
+        students: data.students || 0,
+        faculty: data.faculty || 0,
+        admins: data.admins || 0,
+      });
+    } catch (err) {
+      console.error('Failed to fetch stats:', err);
+    }
+  };
+
+  // Fetch all users from backend (client-side filtering)
+  const fetchAllUsers = async () => {
     setLoading(true);
     try {
-      const params = {};
-      if (searchQuery) params.search = searchQuery;
-      if (roleFilter) params.role = roleFilter;
-      if (semesterFilter) params.semester = parseInt(semesterFilter);
-      if (sectionFilter) params.section = sectionFilter;
-
-      const data = await adminService.getUsers(params);
-      setUsers(data.users || []);
+      // Fetch in batches if needed, but 100 limit should be fine for now
+      const data = await adminService.getUsers({ limit: 100 });
+      setAllUsersList(data.users || []);
     } catch (err) {
       console.error('Failed to fetch users:', err);
     } finally {
@@ -62,10 +73,37 @@ export default function AdminUsersPage() {
     }
   };
 
-  // Refetch when any filter changes
+  // Client-side filtering
+  const filteredUsers = allUsersList.filter(user => {
+    // Search filter (name or email)
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      const matchesName = user.full_name?.toLowerCase().includes(query);
+      const matchesEmail = user.email?.toLowerCase().includes(query);
+      if (!matchesName && !matchesEmail) return false;
+    }
+
+    // Role filter
+    if (roleFilter && user.role !== roleFilter) return false;
+
+    // Semester filter (skip for faculty)
+    if (semesterFilter && user.role !== 'faculty') {
+      if (user.semester !== parseInt(semesterFilter)) return false;
+    }
+
+    // Section filter (skip for faculty)
+    if (sectionFilter && user.role !== 'faculty') {
+      if (user.section !== sectionFilter) return false;
+    }
+
+    return true;
+  });
+
+  // Initial load
   useEffect(() => {
-    fetchUsers();
-  }, [searchQuery, roleFilter, semesterFilter, sectionFilter]);
+    fetchStats();
+    fetchAllUsers();
+  }, []);
 
   const resetForm = () => {
     setFormData({
@@ -135,7 +173,8 @@ export default function AdminUsersPage() {
       }
 
       closeForm();
-      fetchUsers();
+      fetchAllUsers();
+      fetchStats(); // Update stats as well
     } catch (err) {
       alert('Error: ' + err.message);
     } finally {
@@ -153,7 +192,8 @@ export default function AdminUsersPage() {
     try {
       await adminService.deleteUser(deleteConfirm.id);
       setDeleteConfirm(null);
-      fetchUsers();
+      fetchAllUsers();
+      fetchStats(); // Update stats as well
     } catch (err) {
       alert('Delete failed: ' + err.message);
     }
@@ -184,13 +224,6 @@ export default function AdminUsersPage() {
       case 'student': return GraduationCap;
       default: return Shield;
     }
-  };
-
-  const stats = {
-    total: users.length,
-    students: users.filter(u => u.role === 'student').length,
-    faculty: users.filter(u => u.role === 'faculty').length,
-    admins: users.filter(u => u.role === 'admin').length,
   };
 
   return (
@@ -286,7 +319,15 @@ export default function AdminUsersPage() {
         {/* Role Filter */}
         <select
           value={roleFilter}
-          onChange={(e) => setRoleFilter(e.target.value)}
+          onChange={(e) => {
+            const newRole = e.target.value;
+            setRoleFilter(newRole);
+            // Clear semester/section if not student
+            if (newRole && newRole !== 'student') {
+              setSemesterFilter('');
+              setSectionFilter('');
+            }
+          }}
           className="h-10 px-4 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#1266f1] focus:border-transparent"
         >
           <option value="">All Roles</option>
@@ -295,29 +336,33 @@ export default function AdminUsersPage() {
           <option value="admin">Admins</option>
         </select>
 
-        {/* Semester Filter */}
-        <select
-          value={semesterFilter}
-          onChange={(e) => setSemesterFilter(e.target.value)}
-          className="h-10 px-4 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#1266f1] focus:border-transparent"
-        >
-          <option value="">All Semesters</option>
-          {[1, 2, 3, 4, 5, 6, 7, 8].map(s => (
-            <option key={s} value={s.toString()}>Sem {s}</option>
-          ))}
-        </select>
+        {/* Semester Filter - only for students */}
+        {!roleFilter || roleFilter === 'student' ? (
+          <select
+            value={semesterFilter}
+            onChange={(e) => setSemesterFilter(e.target.value)}
+            className="h-10 px-4 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#1266f1] focus:border-transparent"
+          >
+            <option value="">All Semesters</option>
+            {[1, 2, 3, 4, 5, 6, 7, 8].map(s => (
+              <option key={s} value={s.toString()}>Sem {s}</option>
+            ))}
+          </select>
+        ) : null}
 
-        {/* Section Filter */}
-        <select
-          value={sectionFilter}
-          onChange={(e) => setSectionFilter(e.target.value)}
-          className="h-10 px-4 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#1266f1] focus:border-transparent"
-        >
-          <option value="">All Sections</option>
-          {['A', 'B'].map(s => (
-            <option key={s} value={s}>Section {s}</option>
-          ))}
-        </select>
+        {/* Section Filter - only for students */}
+        {!roleFilter || roleFilter === 'student' ? (
+          <select
+            value={sectionFilter}
+            onChange={(e) => setSectionFilter(e.target.value)}
+            className="h-10 px-4 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#1266f1] focus:border-transparent"
+          >
+            <option value="">All Sections</option>
+            {['A', 'B'].map(s => (
+              <option key={s} value={s}>Section {s}</option>
+            ))}
+          </select>
+        ) : null}
 
         {/* Clear Filters */}
         {hasActiveFilters && (
@@ -498,7 +543,7 @@ export default function AdminUsersPage() {
       <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800 overflow-hidden">
         <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-800">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Users</h2>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">{users.length} users {hasActiveFilters && '(filtered)'}</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">{filteredUsers.length} users {hasActiveFilters && '(filtered)'}</p>
         </div>
 
         {loading ? (
@@ -507,7 +552,7 @@ export default function AdminUsersPage() {
           </div>
         ) : (
           <div className="divide-y divide-gray-100 dark:divide-gray-800">
-            {users.map((user) => {
+            {filteredUsers.map((user) => {
               const badge = getRoleBadge(user.role);
 
               return (
@@ -567,7 +612,7 @@ export default function AdminUsersPage() {
           </div>
         )}
 
-        {!loading && users.length === 0 && (
+        {!loading && filteredUsers.length === 0 && (
           <div className="text-center py-16 px-6">
             <Shield className="h-16 w-16 text-gray-200 dark:text-gray-800 mx-auto mb-4" />
             <p className="text-gray-500 dark:text-gray-400">

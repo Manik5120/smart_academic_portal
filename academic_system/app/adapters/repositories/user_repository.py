@@ -92,6 +92,7 @@ class UserRepository(IUserRepository):
         role: Optional[UserRole] = None,
         semester: Optional[int] = None,
         section: Optional[str] = None,
+        search: Optional[str] = None,
         skip: int = 0,
         limit: int = 20
     ) -> List[User]:
@@ -103,9 +104,17 @@ class UserRepository(IUserRepository):
             query["semester"] = semester
         if section:
             query["section"] = section
+        if search:
+            # Search by name or email (case-insensitive)
+            query["$or"] = [
+                {"full_name": {"$regex": search, "$options": "i"}},
+                {"email": {"$regex": search, "$options": "i"}}
+            ]
 
+        print(f"DEBUG: find_all called with query={query}, search={search}")  # Debug log
         cursor = self.collection.find(query).skip(skip).limit(limit)
         documents = await cursor.to_list(length=limit)
+        print(f"DEBUG: found {len(documents)} users")  # Debug log
         return [self._to_entity(doc) for doc in documents]
 
     async def count(self, role: Optional[UserRole] = None) -> int:
