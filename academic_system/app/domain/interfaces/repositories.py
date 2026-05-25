@@ -44,6 +44,7 @@ class IUserRepository(ABC):
         role: Optional[UserRole] = None,
         semester: Optional[int] = None,
         section: Optional[str] = None,
+        search: Optional[str] = None,
         skip: int = 0,
         limit: int = 20
     ) -> List[User]:

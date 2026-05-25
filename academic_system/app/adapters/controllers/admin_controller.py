@@ -1,5 +1,7 @@
 """Admin controller - FastAPI routes."""
 
+print("===== ADMIN CONTROLLER LOADED =====")
+
 from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from motor.motor_asyncio import AsyncIOMotorDatabase
@@ -115,19 +117,23 @@ async def list_users(
     role: UserRole = None,
     semester: int = None,
     section: str = None,
+    search: str = None,
     skip: int = 0,
     limit: int = Query(20, le=100),
     current_admin: User = Depends(get_current_admin),
     user_repo: IUserRepository = Depends(get_user_repository)
 ):
     """List users with optional filters (admin only)."""
+    print(f"DEBUG CONTROLLER: search={search}, role={role}, semester={semester}, section={section}")
     users = await user_repo.find_all(
         role=role,
         semester=semester,
         section=section,
+        search=search,
         skip=skip,
         limit=limit
     )
+    print(f"DEBUG CONTROLLER: found {len(users)} users")
     return {
         "users": [
             {
