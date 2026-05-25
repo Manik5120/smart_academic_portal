@@ -58,4 +58,20 @@ export const authService = {
     });
     return data;
   },
+
+  sendRegistrationOtp: async (email) => {
+    const data = await api('/auth/registration/send-otp', {
+      method: 'POST',
+      body: JSON.stringify({ email }),
+    });
+    return data;
+  },
+
+  verifyRegistrationOtp: async (email, otp) => {
+    const data = await api('/auth/registration/verify-otp', {
+      method: 'POST',
+      body: JSON.stringify({ email, otp }),
+    });
+    return data;
+  },
 };

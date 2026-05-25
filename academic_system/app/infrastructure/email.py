@@ -50,7 +50,8 @@ class EmailService:
             async with aiosmtplib.SMTP(
                 hostname=self.host,
                 port=self.port,
-                use_tls=True
+                start_tls=True,
+                timeout=10  # 10 second timeout
             ) as smtp:
                 await smtp.login(self.username, self.password)
                 await smtp.send_message(message)
@@ -75,6 +76,35 @@ This OTP is valid for 10 minutes. If you didn't request this, please ignore this
     <div style="background-color: #f4f4f4; padding: 30px; border-radius: 10px;">
         <h2 style="color: #1266f1;">Password Reset OTP</h2>
         <p>Your password reset OTP for academic portal is:</p>
+        <div style="background-color: #1266f1; color: white; padding: 15px; text-align: center; font-size: 24px; font-weight: bold; border-radius: 5px; letter-spacing: 5px;">
+            {otp}
+        </div>
+        <p style="margin-top: 20px;">This OTP is valid for 10 minutes.</p>
+        <p>If you didn't request this, please ignore this email.</p>
+        <hr style="margin-top: 30px; border: none; border-top: 1px solid #ddd;">
+        <p style="color: #666; font-size: 14px;">NIT Srinagar Academic Portal</p>
+    </div>
+</body>
+</html>"""
+
+        return await self.send_email(email, subject, plain_text, html_text)
+
+    async def send_registration_otp_email(self, email: str, otp: str) -> bool:
+        """Send registration OTP email."""
+        subject = "Registration OTP - Academic Portal"
+
+        plain_text = f"""Your OTP for registration on NIT Srinagar Academic Portal is: {otp}
+
+This OTP is valid for 10 minutes. If you didn't request this, please ignore this email.
+
+- NIT Srinagar Academic Portal"""
+
+        html_text = f"""<!DOCTYPE html>
+<html>
+<body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+    <div style="background-color: #f4f4f4; padding: 30px; border-radius: 10px;">
+        <h2 style="color: #1266f1;">Registration OTP - Academic Portal</h2>
+        <p>Your OTP for registration on NIT Srinagar Academic Portal is:</p>
         <div style="background-color: #1266f1; color: white; padding: 15px; text-align: center; font-size: 24px; font-weight: bold; border-radius: 5px; letter-spacing: 5px;">
             {otp}
         </div>

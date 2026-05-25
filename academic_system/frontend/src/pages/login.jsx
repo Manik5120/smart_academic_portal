@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { ArrowLeft, CheckCircle2, Eye, EyeOff, Mail, Lock, User, Briefcase, XCircle } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, Eye, EyeOff, Mail, Lock, User, Briefcase, XCircle, Key } from 'lucide-react';
 import { authService } from '../services/auth';
 import { setToken, setUser } from '../lib/api';
 import { Card, CardContent } from '../components/ui/card';
@@ -34,6 +34,13 @@ export default function LoginPage() {
   const [submitError, setSubmitError] = useState('');
   const [loading, setLoading] = useState(false);
   const [isForgotPasswordOpen, setIsForgotPasswordOpen] = useState(false);
+
+  // Registration OTP states
+  const [regStep, setRegStep] = useState(1);
+  const [regOtp, setRegOtp] = useState('');
+  const [canResendRegOtp, setCanResendRegOtp] = useState(false);
+  const [regResendCountdown, setRegResendCountdown] = useState(60);
+  const [regOtpLoading, setRegOtpLoading] = useState(false);
 
   useEffect(() => {
     const nextIsLogin = searchParams.get('mode') !== 'register';
@@ -124,6 +131,11 @@ export default function LoginPage() {
       roll_number: '',
       employee_id: '',
     });
+    // Reset registration OTP states
+    setRegStep(1);
+    setRegOtp('');
+    setCanResendRegOtp(false);
+    setRegResendCountdown(60);
   };
 
   const validateForm = () => {
@@ -150,6 +162,11 @@ export default function LoginPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitError('');
+
+    // Prevent form submission during registration OTP steps
+    if (!isLogin && regStep !== 3) {
+      return;
+    }
     const validationErrors = validateForm();
 
     if (Object.keys(validationErrors).length > 0) {
@@ -185,11 +202,11 @@ export default function LoginPage() {
         }
 
         await authService.register(registerData);
-        const nextParams = new URLSearchParams(searchParams);
-        nextParams.delete('mode');
-        setSearchParams(nextParams, { replace: true });
-        setIsLogin(true);
-        setFormData(prev => ({ ...prev, password: '' }));
+        // Auto-login after registration
+        const loginData = await authService.login(formData.email, formData.password);
+        setToken(loginData.access_token);
+        setUser(loginData.user);
+        navigate('/dashboard');
       }
     } catch (err) {
       setSubmitError(err.message || 'Authentication failed. Please try again.');
@@ -265,6 +282,82 @@ export default function LoginPage() {
 
     navigate('/');
   };
+
+  // Registration OTP handlers
+  const handleSendRegOtp = async (e) => {
+    e.preventDefault();
+    setSubmitError('');
+
+    const emailError = validateField('email', formData.email);
+    if (emailError) {
+      setErrors({ email: emailError });
+      setTouched({ email: true });
+      return;
+    }
+
+    setRegOtpLoading(true);
+    try {
+      await authService.sendRegistrationOtp(formData.email);
+      setRegStep(2);
+      setRegResendCountdown(60);
+      setCanResendRegOtp(false);
+    } catch (err) {
+      setSubmitError(err.message || 'Failed to send OTP');
+    } finally {
+      setRegOtpLoading(false);
+    }
+  };
+
+  const handleResendRegOtp = async () => {
+    setSubmitError('');
+    setRegOtpLoading(true);
+    try {
+      await authService.sendRegistrationOtp(formData.email);
+      setRegResendCountdown(60);
+      setCanResendRegOtp(false);
+    } catch (err) {
+      setSubmitError(err.message || 'Failed to resend OTP');
+    } finally {
+      setRegOtpLoading(false);
+    }
+  };
+
+  const handleVerifyRegOtp = async (e) => {
+    e.preventDefault();
+    setSubmitError('');
+
+    if (!regOtp || regOtp.length !== 6 || !/^\d{6}$/.test(regOtp)) {
+      setSubmitError('Please enter a valid 6-digit OTP');
+      return;
+    }
+
+    setRegOtpLoading(true);
+    try {
+      await authService.verifyRegistrationOtp(formData.email, regOtp);
+      setRegStep(3);
+    } catch (err) {
+      setSubmitError(err.message || 'OTP verification failed');
+    } finally {
+      setRegOtpLoading(false);
+    }
+  };
+
+  // Countdown timer for resend OTP
+  useEffect(() => {
+    let interval;
+    if (!isLogin && regStep === 2 && regResendCountdown > 0 && !canResendRegOtp) {
+      interval = setInterval(() => {
+        setRegResendCountdown((prev) => {
+          if (prev <= 1) {
+            setCanResendRegOtp(true);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [isLogin, regStep, regResendCountdown, canResendRegOtp]);
 
   return (
     <div
@@ -345,265 +438,372 @@ export default function LoginPage() {
               {/* Registration Fields */}
               {!isLogin && (
                 <>
-                  {/* Role Selection */}
-                  <div className="grid grid-cols-2 gap-3">
-                    <button
-                      type="button"
-                      onClick={() => switchRegistrationRole('student')}
-                      className={`flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all duration-200 ${
-                        formData.role === 'student'
-                          ? 'border-[#1266f1] bg-[#1266f1]/10 dark:bg-[#1266f1]/20'
-                          : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
-                      }`}
-                    >
-                      <Briefcase className="h-5 w-5 text-[#1266f1] dark:text-[#5a9fff]" />
-                      <span className="text-sm font-medium text-gray-900 dark:text-white">Student</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => switchRegistrationRole('faculty')}
-                      className={`flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all duration-200 ${
-                        formData.role === 'faculty'
-                          ? 'border-[#1266f1] bg-[#1266f1]/10 dark:bg-[#1266f1]/20'
-                          : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
-                      }`}
-                    >
-                      <User className="h-5 w-5 text-[#1266f1] dark:text-[#5a9fff]" />
-                      <span className="text-sm font-medium text-gray-900 dark:text-white">Faculty</span>
-                    </button>
-                  </div>
-
-                  {/* Full Name */}
-                  <div className="space-y-2">
-                    <Label htmlFor="full_name" className="text-gray-700 dark:text-gray-300">
-                      Full Name
-                    </Label>
-                    <div className="relative">
-                      <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
-                      <Input
-                        id="full_name"
-                        type="text"
-                        placeholder="Enter your full name"
-                        value={formData.full_name}
-                        onChange={e => handleChange('full_name', e.target.value)}
-                        onBlur={() => handleBlur('full_name')}
-                        className={`pl-10 ${touched.full_name && errors.full_name ? 'border-red-500 focus-visible:ring-red-500' : ''}`}
-                        aria-invalid={touched.full_name && errors.full_name ? 'true' : 'false'}
-                        aria-describedby={touched.full_name && errors.full_name ? 'full_name-error' : undefined}
+                  {/* Registration Step Indicator */}
+                  <div className="flex items-center justify-center gap-2 mb-6">
+                    {[1, 2, 3].map((step) => (
+                      <div
+                        key={step}
+                        className={`h-2 w-2 rounded-full transition-all ${
+                          step <= regStep ? 'bg-[#1266f1]' : 'bg-gray-300 dark:bg-gray-600'
+                        }`}
                       />
-                    </div>
-                    {touched.full_name && errors.full_name && (
-                      <p id="full_name-error" className="text-xs text-red-600 dark:text-red-400">
-                        {errors.full_name}
-                      </p>
-                    )}
+                    ))}
                   </div>
 
-                  {/* Student Fields */}
-                  {formData.role === 'student' && (
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="semester" className="text-gray-700 dark:text-gray-300">
-                          Semester
-                        </Label>
-                        <select
-                          id="semester"
-                          value={formData.semester}
-                          onChange={e => handleChange('semester', e.target.value)}
-                          onBlur={() => handleBlur('semester')}
-                          className={`flex h-10 w-full rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1266f1] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer ${
-                            touched.semester && errors.semester ? 'border-red-500 focus-visible:ring-red-500' : ''
-                          }`}
-                          aria-invalid={touched.semester && errors.semester ? 'true' : 'false'}
-                        >
-                          {[1, 2, 3, 4, 5, 6, 7, 8].map(s => (
-                            <option key={s} value={s.toString()}>
-                              Semester {s}
-                            </option>
-                          ))}
-                        </select>
-                        {touched.semester && errors.semester && (
-                          <p className="text-xs text-red-600 dark:text-red-400">{errors.semester}</p>
-                        )}
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label htmlFor="section" className="text-gray-700 dark:text-gray-300">
-                          Section
-                        </Label>
-                        <select
-                          id="section"
-                          value={formData.section}
-                          onChange={e => handleChange('section', e.target.value)}
-                          onBlur={() => handleBlur('section')}
-                          className={`flex h-10 w-full rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1266f1] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer ${
-                            touched.section && errors.section ? 'border-red-500 focus-visible:ring-red-500' : ''
-                          }`}
-                          aria-invalid={touched.section && errors.section ? 'true' : 'false'}
-                        >
-                          {['A', 'B'].map(s => (
-                            <option key={s} value={s}>
-                              Section {s}
-                            </option>
-                          ))}
-                        </select>
-                        {touched.section && errors.section && (
-                          <p className="text-xs text-red-600 dark:text-red-400">{errors.section}</p>
-                        )}
-                      </div>
-
-                      <div className="space-y-2 col-span-2">
-                        <Label htmlFor="roll_number" className="text-gray-700 dark:text-gray-300">
-                          Enroll No.
-                        </Label>
-                        <Input
-                          id="roll_number"
-                          type="text"
-                          placeholder="2022BCSE021"
-                          value={formData.roll_number}
-                          onChange={e => handleChange('roll_number', e.target.value.toUpperCase())}
-                          onBlur={() => {
-                            handleChange('roll_number', formData.roll_number.toUpperCase());
-                            handleBlur('roll_number');
-                          }}
-                          className={`uppercase ${touched.roll_number && errors.roll_number ? 'border-red-500 focus-visible:ring-red-500' : ''}`}
-                          aria-invalid={touched.roll_number && errors.roll_number ? 'true' : 'false'}
-                        />
-                        {touched.roll_number && errors.roll_number && (
-                          <p className="text-xs text-red-600 dark:text-red-400">{errors.roll_number}</p>
-                        )}
-                      </div>
+                  {/* Step 1: Send OTP */}
+                  {regStep === 1 && (
+                    <div className="text-center mb-6">
+                      <Mail className="h-12 w-12 text-[#1266f1] mx-auto mb-2" />
+                      <p className="text-gray-600 dark:text-gray-400">
+                        Enter your email to receive a verification OTP
+                      </p>
                     </div>
                   )}
 
-                  {formData.role === 'faculty' && (
-                    <div className="space-y-2">
-                      <Label htmlFor="employee_id" className="text-gray-700 dark:text-gray-300">
-                        Faculty ID
-                      </Label>
-                      <div className="relative">
-                        <Briefcase className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+                  {/* Step 2: Verify OTP */}
+                  {regStep === 2 && (
+                    <>
+                      <div className="text-center mb-6">
+                        <Key className="h-12 w-12 text-[#1266f1] mx-auto mb-2" />
+                        <p className="text-gray-600 dark:text-gray-400">
+                          Enter the 6-digit OTP sent to your email
+                        </p>
+                      </div>
+
+                      <div className="space-y-2 mb-4">
+                        <Label htmlFor="reg-otp" className="text-gray-700 dark:text-gray-300">
+                          OTP
+                        </Label>
                         <Input
-                          id="employee_id"
+                          id="reg-otp"
                           type="text"
-                          placeholder="e.g., FAC001"
-                          value={formData.employee_id}
-                          onChange={e => handleChange('employee_id', e.target.value)}
-                          onBlur={() => handleBlur('employee_id')}
-                          className={`pl-10 ${touched.employee_id && errors.employee_id ? 'border-red-500 focus-visible:ring-red-500' : ''}`}
-                          aria-invalid={touched.employee_id && errors.employee_id ? 'true' : 'false'}
-                          aria-describedby={touched.employee_id && errors.employee_id ? 'employee_id-error' : undefined}
+                          inputMode="numeric"
+                          maxLength={6}
+                          placeholder="123456"
+                          value={regOtp}
+                          onChange={e => {
+                            const value = e.target.value.replace(/\D/g, '').slice(0, 6);
+                            setRegOtp(value);
+                          }}
+                          className="w-full text-center text-2xl tracking-widest"
                         />
                       </div>
-                      {touched.employee_id && errors.employee_id && (
-                        <p id="employee_id-error" className="text-xs text-red-600 dark:text-red-400">
-                          {errors.employee_id}
-                        </p>
+
+                      <Button
+                        type="button"
+                        onClick={handleVerifyRegOtp}
+                        className="w-full h-11 bg-[#1266f1] hover:bg-[#0d52d1] text-white font-medium shadow-lg shadow-[#1266f1]/25 transition-all duration-200"
+                        disabled={regOtpLoading || regOtp.length !== 6}
+                      >
+                        {regOtpLoading ? 'Verifying...' : 'Verify OTP'}
+                      </Button>
+
+                      <div className="flex items-center justify-between text-sm mt-4">
+                        <button
+                          type="button"
+                          onClick={() => setRegStep(1)}
+                          className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
+                        >
+                          Change email
+                        </button>
+                        <button
+                          type="button"
+                          onClick={handleResendRegOtp}
+                          disabled={!canResendRegOtp || regOtpLoading}
+                          className={`font-medium ${
+                            canResendRegOtp
+                              ? 'text-[#1266f1] hover:text-[#0d52d1]'
+                              : 'text-gray-400 cursor-not-allowed'
+                          }`}
+                        >
+                          {regOtpLoading ? 'Resending...' : canResendRegOtp ? 'Resend OTP' : `Resend OTP in ${regResendCountdown}s`}
+                        </button>
+                      </div>
+                    </>
+                  )}
+
+                  {/* Step 3: Full Registration Form */}
+                  {regStep === 3 && (
+                    <>
+                      {/* Role Selection */}
+                      <div className="grid grid-cols-2 gap-3">
+                        <button
+                          type="button"
+                          onClick={() => switchRegistrationRole('student')}
+                          className={`flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all duration-200 ${
+                            formData.role === 'student'
+                              ? 'border-[#1266f1] bg-[#1266f1]/10 dark:bg-[#1266f1]/20'
+                              : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
+                          }`}
+                        >
+                          <Briefcase className="h-5 w-5 text-[#1266f1] dark:text-[#5a9fff]" />
+                          <span className="text-sm font-medium text-gray-900 dark:text-white">Student</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => switchRegistrationRole('faculty')}
+                          className={`flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all duration-200 ${
+                            formData.role === 'faculty'
+                              ? 'border-[#1266f1] bg-[#1266f1]/10 dark:bg-[#1266f1]/20'
+                              : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
+                          }`}
+                        >
+                          <User className="h-5 w-5 text-[#1266f1] dark:text-[#5a9fff]" />
+                          <span className="text-sm font-medium text-gray-900 dark:text-white">Faculty</span>
+                        </button>
+                      </div>
+
+                      {/* Full Name */}
+                      <div className="space-y-2">
+                        <Label htmlFor="full_name" className="text-gray-700 dark:text-gray-300">
+                          Full Name
+                        </Label>
+                        <div className="relative">
+                          <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+                          <Input
+                            id="full_name"
+                            type="text"
+                            placeholder="Enter your full name"
+                            value={formData.full_name}
+                            onChange={e => handleChange('full_name', e.target.value)}
+                            onBlur={() => handleBlur('full_name')}
+                            className={`pl-10 ${touched.full_name && errors.full_name ? 'border-red-500 focus-visible:ring-red-500' : ''}`}
+                            aria-invalid={touched.full_name && errors.full_name ? 'true' : 'false'}
+                            aria-describedby={touched.full_name && errors.full_name ? 'full_name-error' : undefined}
+                          />
+                        </div>
+                        {touched.full_name && errors.full_name && (
+                          <p id="full_name-error" className="text-xs text-red-600 dark:text-red-400">
+                            {errors.full_name}
+                          </p>
+                        )}
+                      </div>
+
+                      {/* Student Fields */}
+                      {formData.role === 'student' && (
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <Label htmlFor="semester" className="text-gray-700 dark:text-gray-300">
+                              Semester
+                            </Label>
+                            <select
+                              id="semester"
+                              value={formData.semester}
+                              onChange={e => handleChange('semester', e.target.value)}
+                              onBlur={() => handleBlur('semester')}
+                              className={`flex h-10 w-full rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1266f1] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer ${
+                                touched.semester && errors.semester ? 'border-red-500 focus-visible:ring-red-500' : ''
+                              }`}
+                              aria-invalid={touched.semester && errors.semester ? 'true' : 'false'}
+                            >
+                              {[1, 2, 3, 4, 5, 6, 7, 8].map(s => (
+                                <option key={s} value={s.toString()}>
+                                  Semester {s}
+                                </option>
+                              ))}
+                            </select>
+                            {touched.semester && errors.semester && (
+                              <p className="text-xs text-red-600 dark:text-red-400">{errors.semester}</p>
+                            )}
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label htmlFor="section" className="text-gray-700 dark:text-gray-300">
+                              Section
+                            </Label>
+                            <select
+                              id="section"
+                              value={formData.section}
+                              onChange={e => handleChange('section', e.target.value)}
+                              onBlur={() => handleBlur('section')}
+                              className={`flex h-10 w-full rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1266f1] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer ${
+                                touched.section && errors.section ? 'border-red-500 focus-visible:ring-red-500' : ''
+                              }`}
+                              aria-invalid={touched.section && errors.section ? 'true' : 'false'}
+                            >
+                              {['A', 'B'].map(s => (
+                                <option key={s} value={s}>
+                                  Section {s}
+                                </option>
+                              ))}
+                            </select>
+                            {touched.section && errors.section && (
+                              <p className="text-xs text-red-600 dark:text-red-400">{errors.section}</p>
+                            )}
+                          </div>
+
+                          <div className="space-y-2 col-span-2">
+                            <Label htmlFor="roll_number" className="text-gray-700 dark:text-gray-300">
+                              Enroll No.
+                            </Label>
+                            <Input
+                              id="roll_number"
+                              type="text"
+                              placeholder="2022BCSE021"
+                              value={formData.roll_number}
+                              onChange={e => handleChange('roll_number', e.target.value.toUpperCase())}
+                              onBlur={() => {
+                                handleChange('roll_number', formData.roll_number.toUpperCase());
+                                handleBlur('roll_number');
+                              }}
+                              className={`uppercase ${touched.roll_number && errors.roll_number ? 'border-red-500 focus-visible:ring-red-500' : ''}`}
+                              aria-invalid={touched.roll_number && errors.roll_number ? 'true' : 'false'}
+                            />
+                            {touched.roll_number && errors.roll_number && (
+                              <p className="text-xs text-red-600 dark:text-red-400">{errors.roll_number}</p>
+                            )}
+                          </div>
+                        </div>
                       )}
-                    </div>
+
+                      {formData.role === 'faculty' && (
+                        <div className="space-y-2">
+                          <Label htmlFor="employee_id" className="text-gray-700 dark:text-gray-300">
+                            Faculty ID
+                          </Label>
+                          <div className="relative">
+                            <Briefcase className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+                            <Input
+                              id="employee_id"
+                              type="text"
+                              placeholder="e.g., FAC001"
+                              value={formData.employee_id}
+                              onChange={e => handleChange('employee_id', e.target.value)}
+                              onBlur={() => handleBlur('employee_id')}
+                              className={`pl-10 ${touched.employee_id && errors.employee_id ? 'border-red-500 focus-visible:ring-red-500' : ''}`}
+                              aria-invalid={touched.employee_id && errors.employee_id ? 'true' : 'false'}
+                              aria-describedby={touched.employee_id && errors.employee_id ? 'employee_id-error' : undefined}
+                            />
+                          </div>
+                          {touched.employee_id && errors.employee_id && (
+                            <p id="employee_id-error" className="text-xs text-red-600 dark:text-red-400">
+                              {errors.employee_id}
+                            </p>
+                          )}
+                        </div>
+                      )}
+                    </>
                   )}
                 </>
               )}
 
-              {/* Email */}
-              <div className="space-y-2">
-                <Label htmlFor="email" className="text-gray-700 dark:text-gray-300">
-                  Email Address
-                </Label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder={`your.email@${ALLOWED_EMAIL_DOMAIN}`}
-                    value={formData.email}
-                    onChange={e => handleChange('email', e.target.value)}
-                    onBlur={() => handleBlur('email')}
-                    className={`pl-10 ${touched.email && errors.email ? 'border-red-500 focus-visible:ring-red-500' : ''}`}
-                    aria-invalid={touched.email && errors.email ? 'true' : 'false'}
-                    aria-describedby={touched.email && errors.email ? 'email-error' : undefined}
-                  />
-                </div>
-                {touched.email && errors.email && (
-                  <p id="email-error" className="text-xs text-red-600 dark:text-red-400">
-                    {errors.email}
-                  </p>
-                )}
-              </div>
-
-              {/* Password */}
-              <div className="space-y-2">
-                <Label htmlFor="password" className="text-gray-700 dark:text-gray-300">
-                  Password
-                </Label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
-                  <Input
-                    id="password"
-                    type={showPassword ? 'text' : 'password'}
-                    placeholder="8-20 characters"
-                    value={formData.password}
-                    onChange={e => handleChange('password', e.target.value.slice(0, 20))}
-                    onBlur={() => handleBlur('password')}
-                    className={`pl-10 pr-10 ${touched.password && errors.password ? 'border-red-500 focus-visible:ring-red-500' : ''}`}
-                    aria-invalid={touched.password && errors.password ? 'true' : 'false'}
-                    aria-describedby={touched.password && errors.password ? 'password-error' : undefined}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 cursor-pointer transition-colors"
-                    aria-label={showPassword ? 'Hide password' : 'Show password'}
-                  >
-                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                  </button>
-                </div>
-                {touched.password && errors.password && (
-                  <p id="password-error" className="text-xs text-red-600 dark:text-red-400">
-                    {errors.password}
-                  </p>
-                )}
-                {!isLogin && formData.password && (
-                  <div className="space-y-2 rounded-lg border border-slate-200/80 bg-slate-50/80 p-3 dark:border-slate-700 dark:bg-slate-800/70">
-                    <p className="text-xs font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-300">
-                      Password must have:
-                    </p>
-                    <div className="space-y-2">
-                      {passwordCriteria.map((criterion) => {
-                        const Icon = criterion.met ? CheckCircle2 : XCircle;
-                        return (
-                          <div
-                            key={criterion.label}
-                            className={`flex items-center gap-2 text-xs font-medium ${
-                              criterion.met
-                                ? 'text-green-600 dark:text-green-400'
-                                : 'text-red-600 dark:text-red-400'
-                            }`}
-                          >
-                            <Icon className="h-3.5 w-3.5 shrink-0" />
-                            <span>{criterion.label}</span>
-                          </div>
-                        );
-                      })}
+              {/* Email - Show for login or registration step 1 */}
+              {(isLogin || regStep === 1) && (
+                <>
+                  <div className="space-y-2">
+                    <Label htmlFor="email" className="text-gray-700 dark:text-gray-300">
+                      Email Address
+                    </Label>
+                    <div className="relative">
+                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+                      <Input
+                        id="email"
+                        type="email"
+                        placeholder={`your.email@${ALLOWED_EMAIL_DOMAIN}`}
+                        value={formData.email}
+                        onChange={e => handleChange('email', e.target.value)}
+                        onBlur={() => handleBlur('email')}
+                        className={`pl-10 ${touched.email && errors.email ? 'border-red-500 focus-visible:ring-red-500' : ''}`}
+                        aria-invalid={touched.email && errors.email ? 'true' : 'false'}
+                        aria-describedby={touched.email && errors.email ? 'email-error' : undefined}
+                      />
                     </div>
+                    {touched.email && errors.email && (
+                      <p id="email-error" className="text-xs text-red-600 dark:text-red-400">
+                        {errors.email}
+                      </p>
+                    )}
                   </div>
-                )}
-                {/* Forgot Password Link - Only for login mode */}
-                {isLogin && (
-                  <div className="text-right">
+
+                  {/* Send OTP Button - Only for registration step 1 */}
+                  {!isLogin && regStep === 1 && (
+                    <Button
+                      type="button"
+                      onClick={handleSendRegOtp}
+                      className="w-full h-11 bg-[#1266f1] hover:bg-[#0d52d1] text-white font-medium shadow-lg shadow-[#1266f1]/25 transition-all duration-200"
+                      disabled={regOtpLoading}
+                    >
+                      {regOtpLoading ? 'Sending...' : 'Send OTP'}
+                    </Button>
+                  )}
+                </>
+              )}
+
+              {/* Password - Show for login or registration step 3 */}
+              {(isLogin || regStep === 3) && (
+                <div className="space-y-2">
+                  <Label htmlFor="password" className="text-gray-700 dark:text-gray-300">
+                    Password
+                  </Label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+                    <Input
+                      id="password"
+                      type={showPassword ? 'text' : 'password'}
+                      placeholder="8-20 characters"
+                      value={formData.password}
+                      onChange={e => handleChange('password', e.target.value.slice(0, 20))}
+                      onBlur={() => handleBlur('password')}
+                      className={`pl-10 pr-10 ${touched.password && errors.password ? 'border-red-500 focus-visible:ring-red-500' : ''}`}
+                      aria-invalid={touched.password && errors.password ? 'true' : 'false'}
+                      aria-describedby={touched.password && errors.password ? 'password-error' : undefined}
+                    />
                     <button
                       type="button"
-                      onClick={() => setIsForgotPasswordOpen(true)}
-                      className="text-sm text-[#1266f1] dark:text-[#5a9fff] hover:text-[#0d52d1] dark:hover:text-[#7ab3ff] font-medium transition-colors"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 cursor-pointer transition-colors"
+                      aria-label={showPassword ? 'Hide password' : 'Show password'}
                     >
-                      Forgot Password?
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </button>
                   </div>
-                )}
-              </div>
+                  {touched.password && errors.password && (
+                    <p id="password-error" className="text-xs text-red-600 dark:text-red-400">
+                      {errors.password}
+                    </p>
+                  )}
+                  {!isLogin && formData.password && (
+                    <div className="space-y-2 rounded-lg border border-slate-200/80 bg-slate-50/80 p-3 dark:border-slate-700 dark:bg-slate-800/70">
+                      <p className="text-xs font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-300">
+                        Password must have:
+                      </p>
+                      <div className="space-y-2">
+                        {passwordCriteria.map((criterion) => {
+                          const Icon = criterion.met ? CheckCircle2 : XCircle;
+                          return (
+                            <div
+                              key={criterion.label}
+                              className={`flex items-center gap-2 text-xs font-medium ${
+                                criterion.met
+                                  ? 'text-green-600 dark:text-green-400'
+                                  : 'text-red-600 dark:text-red-400'
+                              }`}
+                            >
+                              <Icon className="h-3.5 w-3.5 shrink-0" />
+                              <span>{criterion.label}</span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                  {/* Forgot Password Link - Only for login mode */}
+                  {isLogin && (
+                    <div className="text-right">
+                      <button
+                        type="button"
+                        onClick={() => setIsForgotPasswordOpen(true)}
+                        className="text-sm text-[#1266f1] dark:text-[#5a9fff] hover:text-[#0d52d1] dark:hover:text-[#7ab3ff] font-medium transition-colors"
+                      >
+                        Forgot Password?
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
 
-              {/* Confirm Password - Only for registration */}
-              {!isLogin && (
+              {/* Confirm Password - Only for registration step 3 */}
+              {!isLogin && regStep === 3 && (
                 <div className="space-y-2">
                   <Label htmlFor="confirm_password" className="text-gray-700 dark:text-gray-300">
                     Confirm Password
@@ -635,26 +835,28 @@ export default function LoginPage() {
                 </div>
               )}
 
-              {/* Submit Button */}
-              <Button
-                type="submit"
-                className="w-full h-11 bg-[#1266f1] hover:bg-[#0d52d1] text-white font-medium shadow-lg shadow-[#1266f1]/25 transition-all duration-200"
-                disabled={loading}
-              >
-                {loading ? (
-                  <span className="flex items-center gap-2">
-                    <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                    </svg>
-                    Processing...
-                  </span>
-                ) : isLogin ? (
-                  'Sign In'
-                ) : (
-                  'Create Account'
-                )}
-              </Button>
+              {/* Submit Button - Only show for login or registration step 3 */}
+              {(isLogin || regStep === 3) && (
+                <Button
+                  type="submit"
+                  className="w-full h-11 bg-[#1266f1] hover:bg-[#0d52d1] text-white font-medium shadow-lg shadow-[#1266f1]/25 transition-all duration-200"
+                  disabled={loading}
+                >
+                  {loading ? (
+                    <span className="flex items-center gap-2">
+                      <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                      </svg>
+                      Processing...
+                    </span>
+                  ) : isLogin ? (
+                    'Sign In'
+                  ) : (
+                    'Create Account'
+                  )}
+                </Button>
+              )}
 
               {/* Toggle Link */}
               <div className="text-center text-sm">

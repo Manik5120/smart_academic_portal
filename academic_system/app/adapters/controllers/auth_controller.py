@@ -16,6 +16,7 @@ from app.use_cases.auth import (
     ChangePasswordRequest
 )
 from app.use_cases.password_reset import PasswordResetUseCase
+from app.use_cases.registration_otp import RegistrationOTPUseCase
 from app.infrastructure.dependencies import get_current_user, get_current_admin
 from app.infrastructure.database import get_database
 from app.infrastructure.redis import get_redis
@@ -38,6 +39,15 @@ async def get_password_reset_use_case(
     """Dependency to get password reset use case."""
     user_repo = UserRepository(db)
     return PasswordResetUseCase(user_repo, redis)
+
+
+async def get_registration_otp_use_case(
+    db: AsyncIOMotorDatabase = Depends(get_database),
+    redis = Depends(get_redis)
+) -> RegistrationOTPUseCase:
+    """Dependency to get registration OTP use case."""
+    user_repo = UserRepository(db)
+    return RegistrationOTPUseCase(user_repo, redis)
 
 
 @router.post("/login", response_model=dict)
@@ -190,6 +200,41 @@ async def reset_password(
         )
         await password_reset_use_case.reset_password(req)
         return {"message": "Password reset successfully"}
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e)
+        )
+
+
+@router.post("/registration/send-otp")
+async def send_registration_otp(
+    request: ForgotPasswordSchema,
+    registration_otp_use_case: RegistrationOTPUseCase = Depends(get_registration_otp_use_case)
+):
+    """Send OTP for new user registration."""
+    try:
+        response = await registration_otp_use_case.send_registration_otp(request.email)
+        return {
+            "message": response["message"],
+            "expiry_seconds": response["expiry_seconds"]
+        }
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e)
+        )
+
+
+@router.post("/registration/verify-otp")
+async def verify_registration_otp(
+    request: VerifyOtpSchema,
+    registration_otp_use_case: RegistrationOTPUseCase = Depends(get_registration_otp_use_case)
+):
+    """Verify OTP for registration."""
+    try:
+        await registration_otp_use_case.verify_registration_otp(request.email, request.otp)
+        return {"message": "OTP verified successfully", "valid": True}
     except ValueError as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,

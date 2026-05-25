@@ -46,7 +46,7 @@ class User:
     section: Optional[str] = None
     roll_number: Optional[str] = None
     employee_id: Optional[str] = None
-    department: Optional[str] = None
+    department: Optional[str] = "CSE"
 
     def __post_init__(self):
         """Validate user data after initialization."""

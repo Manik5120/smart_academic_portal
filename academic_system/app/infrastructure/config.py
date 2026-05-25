@@ -56,6 +56,21 @@ class Settings(BaseSettings):
     jwt_refresh_token_expire_days: int = Field(default=7, description="Refresh token expiration")
     jwt_refresh_enabled: bool = Field(default=True, description="Enable refresh tokens")
 
+    # Redis
+    redis_url: str = Field(default="redis://localhost:6379", description="Redis connection URL")
+    redis_password: str | None = Field(default=None, description="Redis password (optional)")
+    redis_db: int = Field(default=0, description="Redis database number")
+    redis_password_reset_ttl: int = Field(default=600, description="Password reset OTP TTL in seconds (10 minutes)")
+
+    # Email (Gmail SMTP)
+    email_enabled: bool = Field(default=True, description="Enable email sending")
+    email_host: str = Field(default="smtp.gmail.com", description="SMTP host")
+    email_port: int = Field(default=587, description="SMTP port")
+    email_username: str = Field(default="", description="Email username")
+    email_password: str = Field(default="", description="Email app password")
+    email_from: str = Field(default="Academic Portal <noreply@nitsri.ac.in>", description="From email address")
+    email_from_name: str = Field(default="NIT Srinagar Academic Portal", description="From name")
+
     # CORS
     cors_origins: Annotated[List[str], NoDecode] = Field(
         default=["http://localhost:3000", "http://localhost:8000"],

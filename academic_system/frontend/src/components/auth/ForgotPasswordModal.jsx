@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { X, Mail, Key, Lock, CheckCircle2, ArrowLeft } from 'lucide-react';
+import { X, Mail, Key, Lock, CheckCircle2, ArrowLeft, Eye, EyeOff } from 'lucide-react';
 import { authService } from '../../services/auth';
 import { Card } from '../ui/card';
 import { Button } from '../ui/button';
@@ -14,10 +14,13 @@ export default function ForgotPasswordModal({ isOpen, onClose, initialEmail = ''
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [resendLoading, setResendLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   const [canResendOtp, setCanResendOtp] = useState(false);
   const [resendCountdown, setResendCountdown] = useState(60);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   // Reset form when modal opens/closes
   useEffect(() => {
@@ -31,6 +34,8 @@ export default function ForgotPasswordModal({ isOpen, onClose, initialEmail = ''
       setSuccess(false);
       setCanResendOtp(false);
       setResendCountdown(60);
+      setShowNewPassword(false);
+      setShowConfirmPassword(false);
     }
   }, [isOpen, initialEmail]);
 
@@ -111,7 +116,7 @@ export default function ForgotPasswordModal({ isOpen, onClose, initialEmail = ''
 
   const handleResendOtp = async () => {
     setError('');
-    setLoading(true);
+    setResendLoading(true);
     try {
       await authService.forgotPassword(email);
       setResendCountdown(60);
@@ -119,7 +124,7 @@ export default function ForgotPasswordModal({ isOpen, onClose, initialEmail = ''
     } catch (err) {
       setError(err.message || 'Failed to resend OTP');
     } finally {
-      setLoading(false);
+      setResendLoading(false);
     }
   };
 
@@ -320,14 +325,14 @@ export default function ForgotPasswordModal({ isOpen, onClose, initialEmail = ''
                     <button
                       type="button"
                       onClick={handleResendOtp}
-                      disabled={!canResendOtp || loading}
+                      disabled={!canResendOtp || resendLoading}
                       className={`font-medium ${
                         canResendOtp
                           ? 'text-[#1266f1] hover:text-[#0d52d1]'
                           : 'text-gray-400 cursor-not-allowed'
                       }`}
                     >
-                      {canResendOtp ? 'Resend OTP' : `Resend OTP in ${resendCountdown}s`}
+                      {resendLoading ? 'Resending...' : canResendOtp ? 'Resend OTP' : `Resend OTP in ${resendCountdown}s`}
                     </button>
                   </div>
                 </form>
@@ -345,26 +350,46 @@ export default function ForgotPasswordModal({ isOpen, onClose, initialEmail = ''
 
                   <div className="space-y-2">
                     <Label htmlFor="new-password">New Password</Label>
-                    <Input
-                      id="new-password"
-                      type="password"
-                      placeholder="8-20 characters"
-                      value={newPassword}
-                      onChange={(e) => setNewPassword(e.target.value.slice(0, 20))}
-                      className="w-full"
-                    />
+                    <div className="relative">
+                      <Input
+                        id="new-password"
+                        type={showNewPassword ? 'text' : 'password'}
+                        placeholder="8-20 characters"
+                        value={newPassword}
+                        onChange={(e) => setNewPassword(e.target.value.slice(0, 20))}
+                        className="w-full pr-10"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowNewPassword(!showNewPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 cursor-pointer transition-colors"
+                        aria-label={showNewPassword ? 'Hide new password' : 'Show new password'}
+                      >
+                        {showNewPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      </button>
+                    </div>
                   </div>
 
                   <div className="space-y-2">
                     <Label htmlFor="confirm-password">Confirm Password</Label>
-                    <Input
-                      id="confirm-password"
-                      type="password"
-                      placeholder="Re-enter your password"
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value.slice(0, 20))}
-                      className="w-full"
-                    />
+                    <div className="relative">
+                      <Input
+                        id="confirm-password"
+                        type={showConfirmPassword ? 'text' : 'password'}
+                        placeholder="Re-enter your password"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value.slice(0, 20))}
+                        className="w-full pr-10"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 cursor-pointer transition-colors"
+                        aria-label={showConfirmPassword ? 'Hide confirm password' : 'Show confirm password'}
+                      >
+                        {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      </button>
+                    </div>
                   </div>
 
                   {newPassword && (
