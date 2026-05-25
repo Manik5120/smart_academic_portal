@@ -49,8 +49,14 @@ async def lifespan(app: FastAPI):
 
     # Shutdown
     print("Shutting down...")
-    await redis_client.disconnect()
-    await db.disconnect()
+    try:
+        await redis_client.disconnect()
+        print("Redis disconnected.")
+    except Exception as e:
+        print(f"Warning: Error disconnecting Redis: {e}")
+    finally:
+        await db.disconnect()
+        print("Database disconnected.")
     print("Application stopped.")
 
 
